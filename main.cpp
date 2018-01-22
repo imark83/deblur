@@ -56,18 +56,18 @@ int main(int argc, char const *argv[]) {
   double beta = 1000.0;
   CMat U(blurred);
   // int rows = blurred.rows, cols = blurred.cols;
-  CMat Px;
-  CMat Py;
-  CMat Px0;
-  CMat Py0;
-  CMat PxB;
-  CMat PyB;
+  CMat Px(U.rows, U.cols);
+  CMat Py(U.rows, U.cols);
+  CMat Px0(U.rows, U.cols);
+  CMat Py0(U.rows, U.cols);
+  CMat PxB(U.rows, U.cols);
+  CMat PyB(U.rows, U.cols);
   CMat Ux;
   CMat Uy;
   CMat Denom;
   CMat Nomin2;
-  CMat Wx;
-  CMat Wy;
+  CMat Wx(U.rows, U.cols);
+  CMat Wy(U.rows, U.cols);
   CMat Nono;
   CMat CImg(img);
 
@@ -80,7 +80,7 @@ int main(int argc, char const *argv[]) {
   getC (conjoDx, conjoDy, Nomin1, Denom1, Denom2, img, k);
 
 
-  for(int k=0; k<200; ++k) {
+  for(int k=0; k<1; ++k) {
     double gamma = beta / mu;
     Denom = Denom1 + gamma * Denom2;
 
@@ -91,14 +91,20 @@ int main(int argc, char const *argv[]) {
     Ux = diffY(U);
     Uy = diffX(U);
 
+    for(int i=0; i<256; ++i)
+    std::cout << std::real(U.data[i]) << endl;
+    std::cout << std::endl;
+
     Wx = shrinft(Ux - Complex(1.0/beta)*PxB, 1.0/beta);
     Wy = shrinft(Uy - Complex(1.0/beta)*PyB, 1.0/beta);
+
 
     // u-subproblem
     auxX = Wx;
     auxY = Wy;
-    fftn(auxX); fftn(auxY);
+    fft(auxX); fftn(auxY);
     Nomin2 = (conjoDx^auxX) + (conjoDy^auxY);
+    // std::cout << "fft(Wx) = " << auxX << std::endl;
 
     auxX = PxB;
     auxY = PyB;
@@ -123,6 +129,7 @@ int main(int argc, char const *argv[]) {
 
   }
 
+  std::cout << "S(0) = " << S[0] << std::endl;
   // TESTING AREA
 
 

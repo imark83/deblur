@@ -200,9 +200,8 @@ cv::Mat toCVMat(const Mat &op, double scale) {
 template <>
 Complex var(Complex *op, int n) {
   Complex rop = Complex(0);
-  Complex m;
+  Complex m = mean<Complex>(op, n);
   for(int i=0; i<n; ++i) {
-    m = mean<Complex>(op, n);
     rop = rop + (op[i] - m) * conj(op[i]-m);
   }
   return (rop / ((double) n));
