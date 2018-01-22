@@ -81,7 +81,7 @@ std::ostream & operator<<(std::ostream &output, const Mat_<T> &op) {
 template <class T>
 Mat_<T> operator+(const Mat_<T> &op1, const Mat_<T> &op2) {
   if(op1.rows != op2.rows || op1.cols != op2.cols) {
-    std::cerr << "Dimensions missmatch" << '\n';
+    std::cerr << "Dimensions missmatch" << std::endl;
     exit(1);
   }
   Mat_<T> rop(op1.rows, op1.cols);
@@ -95,7 +95,7 @@ Mat_<T> operator+(const Mat_<T> &op1, const Mat_<T> &op2) {
 template <class T>
 Mat_<T> operator-(const Mat_<T> &op1, const Mat_<T> &op2) {
   if(op1.rows != op2.rows || op1.cols != op2.cols) {
-    std::cerr << "Dimensions missmatch" << '\n';
+    std::cerr << "Dimensions missmatch" << std::endl;
     exit(1);
   }
   Mat_<T> rop(op1.rows, op1.cols);
@@ -122,7 +122,7 @@ Mat_<T> operator*(const Mat_<T> &op1, const T op2) {
 template <class T>
 Mat_<T> operator*(const Mat_<T> &op1, const Mat_<T> &op2) {
   if(op1.cols != op2.rows) {
-    std::cerr << "Dimensions missmatch" << '\n';
+    std::cerr << "Dimensions missmatch" << std::endl;
     exit(1);
   }
   Mat_<T> rop(op1.rows, op2.cols);
@@ -135,11 +135,11 @@ Mat_<T> operator*(const Mat_<T> &op1, const Mat_<T> &op2) {
 }
 
 
-// POINT PRODUCT
+// POINT TO POINT PRODUCT
 template <class T>
 Mat_<T> operator^(const Mat_<T> &op1, const Mat_<T> &op2) {
   if(op1.rows != op2.rows || op1.cols != op2.cols) {
-    std::cerr << "Dimensions missmatch" << '\n';
+    std::cerr << "Dimensions missmatch" << std::endl;
     exit(1);
   }
   Mat_<T> rop(op1.rows, op1.cols);
@@ -149,6 +149,27 @@ Mat_<T> operator^(const Mat_<T> &op1, const Mat_<T> &op2) {
   return rop;
 }
 
+
+// POINT TO POINT DIVISION
+template <class T>
+Mat_<T> operator/(const Mat_<T> &op1, const Mat_<T> &op2) {
+  if(op1.rows != op2.rows || op1.cols != op2.cols) {
+    std::cerr << "Dimensions missmatch" << std::endl;
+    exit(1);
+  }
+  for(int i=0; i<op2.rows; ++i) for(int j=0; j<op2.cols; ++j)
+    if (op2(i,j) == T(0)) {
+      std::cerr << "Division by zero. Bad result" << std::endl;
+      exit(1);
+    }
+  Mat_<T> rop(op1.rows, op1.cols);
+  for(int i=0; i<rop.rows; ++i) for(int j=0; j<rop.cols; ++j)
+    rop(i,j) = op1(i,j) / op2(i,j);
+
+  return rop;
+}
+
+// POINT SQUARE
 template <class T>
 Mat_<T> pow2(const Mat_<T> &op) {
   Mat_<T> rop(op.rows, op.cols);
@@ -161,7 +182,7 @@ Mat_<T> pow2(const Mat_<T> &op) {
 template <class T>
 Mat_<T> diffX(const Mat_<T> &op) {
   if(op.rows < 2) {
-    std::cerr << "Minimum number of rows to differenciate is 2" << '\n';
+    std::cerr << "Minimum number of rows to differenciate is 2" << std::endl;
     exit(1);
   }
   Mat_<T> rop(op.rows, op.cols);
@@ -175,7 +196,7 @@ Mat_<T> diffX(const Mat_<T> &op) {
 template <class T>
 Mat_<T> diffY(const Mat_<T> &op) {
   if(op.cols < 2) {
-    std::cerr << "Minimum number of cols to differenciate is 2" << '\n';
+    std::cerr << "Minimum number of cols to differenciate is 2" << std::endl;
     exit(1);
   }
   Mat_<T> rop(op.rows, op.cols);

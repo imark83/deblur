@@ -12,6 +12,8 @@ typedef std::vector<std::complex<double> > CArray;
 void fft(CArray &x);
 void ifft(CArray &x);
 void fft(CMat &mat);
+void ifft(CMat &mat);
 void fftn(CMat &mat);
+void ifftn(CMat &mat);
 
 #endif

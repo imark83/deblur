@@ -193,3 +193,16 @@ cv::Mat toCVMat(const Mat &op, double scale) {
   }
   return rop;
 }
+
+
+// SPECIALIZATION FOR MATLAB FUCKING VARIANCE
+template <>
+Complex var(Complex *op, int n) {
+  Complex rop = Complex(0);
+  Complex m;
+  for(int i=0; i<n; ++i) {
+    m = mean<Complex>(op, n);
+    rop = rop + (op[i] - m) * conj(op[i]-m);
+  }
+  return (rop / ((double) n));
+}

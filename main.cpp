@@ -86,24 +86,23 @@ int main(int argc, char const *argv[]) {
   // TESTING AREA
 
 
-  std::vector<Complex> v(5);
-  for(int i=0; i<5; ++i) v[i] = Complex(rand()%10, rand()%10);
-  std::cout << "v =";
-  for(int i=0; i<5; ++i)
-    std::cout << "  " << v[i];
-  std::cout << std::endl;
-
-  ifft(v);
-
-  std::cout << "v =";
-  for(int i=0; i<5; ++i)
-    std::cout << "  " << v[i];
-  std::cout << std::endl;
+  // std::vector<Complex> v(5);
+  // for(int i=0; i<5; ++i) v[i] = Complex(rand()%10, rand()%10);
+  // std::cout << "v =";
+  // for(int i=0; i<5; ++i)
+  //   std::cout << "  " << v[i];
+  // std::cout << std::endl;
 
 
-  // CMat a(3,3);
-  // getRand(a);
-  // std::cout << "a = " << '\n' << a << std::endl;
+  CMat a(3,3);
+  CMat b(3,3);
+  getRand(a);
+  getRand(b);
+  std::cout << "a = " << '\n' << a << std::endl;
+  std::cout << "b = " << '\n' << b << std::endl;
+
+  std::cout << "snr(a, b) = " << snr(a, b) << std::endl;
+  // std::cout << "1/a = " << (a/a)/a << std::endl;
 
 
 

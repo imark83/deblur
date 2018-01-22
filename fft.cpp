@@ -64,6 +64,15 @@ void fft(CMat &mat) {
   }
 }
 
+void ifft(CMat &mat) {
+  CArray x(mat.rows);
+  for (int j=0; j<mat.cols; ++j) {
+    for (int i=0; i<mat.rows; ++i) x[i] = mat(i,j);
+    ifft(x);
+    for (int i=0; i<mat.cols; ++i) mat(i,j) = x[i];
+  }
+}
+
 void fftn(CMat &mat) {
   fft(mat);
   std::complex<double> aux;
@@ -71,6 +80,18 @@ void fftn(CMat &mat) {
     aux = mat(i,j); mat (i,j) = mat(j,i); mat(j,i) = aux;
   }
   fft(mat);
+  for (int i=0; i<mat.rows; ++i) for (int j=i+1; j<mat.cols; ++j) {
+    aux = mat(i,j); mat (i,j) = mat(j,i); mat(j,i) = aux;
+  }
+}
+
+void ifftn(CMat &mat) {
+  ifft(mat);
+  std::complex<double> aux;
+  for (int i=0; i<mat.rows; ++i) for (int j=i+1; j<mat.cols; ++j) {
+    aux = mat(i,j); mat (i,j) = mat(j,i); mat(j,i) = aux;
+  }
+  ifft(mat);
   for (int i=0; i<mat.rows; ++i) for (int j=i+1; j<mat.cols; ++j) {
     aux = mat(i,j); mat (i,j) = mat(j,i); mat(j,i) = aux;
   }
