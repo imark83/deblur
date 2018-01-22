@@ -40,6 +40,16 @@ CMat abs(const CMat &op) {
   return rop;
 }
 
+CMat real(const CMat &op) {
+  CMat rop(op.rows, op.cols);
+  for(int i=0; i<op.rows; ++i) for(int j=0; j<op.cols; ++j)
+    rop(i,j) = std::real(op(i,j));
+  return rop;
+}
+
+
+
+// OTHER FUNCTIONS
 void getRand (Mat &rop) {
   for (int i=0; i<rop.rows; ++i) for (int j=0; j<rop.cols; ++j)
     rop(i,j) = (rand() % 11) - 5;

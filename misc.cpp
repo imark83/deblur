@@ -144,7 +144,8 @@ void getC(CMat &conjoDx, CMat &conjoDy, CMat &Nomin1, CMat &Denom1,
 
 // SHRINFT FUNCTION
 const double PI = 3.141592653589793;
-void shrinft(CMat &x, double nameta) {
+CMat shrinft(const CMat &x, double nameta) {
+  CMat rop(x.rows, x.cols);
   double aux = 3.77976314968462*pow(nameta, 0.166666666666667)/4.0;
   std::cout << "aux = " << aux << std::endl;
 
@@ -153,12 +154,12 @@ void shrinft(CMat &x, double nameta) {
   for(int i=0; i<x.rows; ++i)
     for(int j=0; j<x.cols; ++j)
       if (std::abs(x(i,j)) < aux)
-        x(i,j) = Complex(0);
+        rop(i,j) = Complex(0);
       else
-        x(i,j) = (2.0/3.0)*x(i,j)*
+        rop(i,j) = (2.0/3.0)*x(i,j)*
             (1+cos(2.0*PI/3.0-2.0/3.0*
             acos(nameta/8.0*pow((abs(x(i,j))/3.0),-1.5))));
-  return;
+  return rop;
 }
 
 

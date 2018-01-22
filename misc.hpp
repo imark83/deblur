@@ -23,7 +23,7 @@ void getC(CMat &conjoDx, CMat &conjoDy, CMat &Nomin1, CMat &Denom1,
       CMat &Denom2, const Mat &Bn, const Mat &H);
 
 // SHRINFT FUNCTION
-void shrinft(CMat &x, double nameta);
+CMat shrinft(const CMat &x, double nameta);
 
 // GENERATES GAUSSIAN KERNEL
 // size MUST be odd
@@ -73,7 +73,7 @@ T var(const Mat_<T> &op) {
 
 // FUNCTION SNR
 template <class T>
-T snr(const Mat_<T> &ref, const Mat_<T> &sig) {
+T snr(Mat_<T> &ref, Mat_<T> &sig) {
   T mse = (mean(pow2(ref-sig)));
   T dv = var(ref);
   return 10.0 * log10(dv/mse);

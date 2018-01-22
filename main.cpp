@@ -49,39 +49,79 @@ int main(int argc, char const *argv[]) {
   noised = img + noiseData;
   mapMat(noised, 0.0, 1.0);
 
-  // GET CONSTANT MATRICES
-  // CMat conjoDx, conjoDy, Nomin1, Denom1, Denom2;
-  // getC (conjoDx, conjoDy, Nomin1, Denom1, Denom2, img, k);
+
 
   // START WITH THE CODE
-
-
-
-  // % initialization
-  // [m n]=size(Bn);
-  // U=Bn; iter = 0;
-  // beta = 1000;
-  // Px=zeros(m,n);
-  // Py=zeros(m,n);
-  // PxB=Px;
-  // PyB=Py;
-  // S=zeros(100,1);
-
+  // initialization
+  double beta = 1000.0;
+  CMat U(blurred);
   // int rows = blurred.rows, cols = blurred.cols;
-  // CMat U(blurred);
-  // double gamma = 1000.0 / mu;
-  // CMat Px(rows, cols);
-  // CMat Py (rows, cols);
-  // CMat PBx(rows, cols);
-  // CMat PBy (rows, cols);
-  //
-  //
-  // for(int k=0; k<10; ++k) {
-  //
-  // }
+  CMat Px;
+  CMat Py;
+  CMat Px0;
+  CMat Py0;
+  CMat PxB;
+  CMat PyB;
+  CMat Ux;
+  CMat Uy;
+  CMat Denom;
+  CMat Nomin2;
+  CMat Wx;
+  CMat Wy;
+  CMat Nono;
+  CMat CImg(img);
+
+  CMat auxX, auxY;
+
+  CArray S(100);
+
+  // GET CONSTANT MATRICES
+  CMat conjoDx, conjoDy, Nomin1, Denom1, Denom2;
+  getC (conjoDx, conjoDy, Nomin1, Denom1, Denom2, img, k);
 
 
+  for(int k=0; k<200; ++k) {
+    double gamma = beta / mu;
+    Denom = Denom1 + gamma * Denom2;
 
+    // initial p-problem
+    Px0 = Px;
+    Py0 = Py;
+    // w-subproblem
+    Ux = diffY(U);
+    Uy = diffX(U);
+
+    Wx = shrinft(Ux - Complex(1.0/beta)*PxB, 1.0/beta);
+    Wy = shrinft(Uy - Complex(1.0/beta)*PyB, 1.0/beta);
+
+    // u-subproblem
+    auxX = Wx;
+    auxY = Wy;
+    fftn(auxX); fftn(auxY);
+    Nomin2 = (conjoDx^auxX) + (conjoDy^auxY);
+
+    auxX = PxB;
+    auxY = PyB;
+    fftn(auxX); fftn(auxY);
+    Nono = (conjoDx^auxX) + (conjoDy^auxY);
+
+    U = (Nomin1 + gamma*Nomin2 + Complex(1.0/mu)*Nono) / Denom;
+    ifft(U);
+    U = real(U);
+
+    // UPDATE P
+    Ux = diffY(U);
+    Uy = diffX(U);
+
+    Px = PxB + beta*(Wx-Ux);
+    Py = PyB + beta*(Wy-Uy);
+
+    PxB = Px + alpha * (Px - Px0);
+    PyB = Py + alpha * (Py - Py0);
+
+    S[k] = snr(CImg, U);
+
+  }
 
   // TESTING AREA
 
@@ -94,14 +134,14 @@ int main(int argc, char const *argv[]) {
   // std::cout << std::endl;
 
 
-  CMat a(3,3);
-  CMat b(3,3);
-  getRand(a);
-  getRand(b);
-  std::cout << "a = " << '\n' << a << std::endl;
-  std::cout << "b = " << '\n' << b << std::endl;
-
-  std::cout << "snr(a, b) = " << snr(a, b) << std::endl;
+  // CMat a(3,3);
+  // CMat b(3,3);
+  // getRand(a);
+  // getRand(b);
+  // std::cout << "a = " << '\n' << a << std::endl;
+  // std::cout << "b = " << '\n' << b << std::endl;
+  //
+  // std::cout << "snr(a, b) = " << snr(a, b) << std::endl;
   // std::cout << "1/a = " << (a/a)/a << std::endl;
 
 

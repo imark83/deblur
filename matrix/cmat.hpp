@@ -16,6 +16,7 @@ public:
   CMat();
   CMat(int r, int c) : CMat_(r, c) {}
   CMat(const CMat &op) : CMat_(op) {}
+  CMat(const CMat_ &op) : CMat_(op) {}
   CMat(const Mat &op);
 
   CMat &operator=(const CMat_ &op);
@@ -48,6 +49,7 @@ void getRand(CMat &);
 // COMPLEX FUNCTIONS
 CMat conj(const CMat &op);
 CMat abs(const CMat &op);
+CMat real(const CMat &op);
 
 
 
