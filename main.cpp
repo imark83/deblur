@@ -36,14 +36,14 @@ int main(int argc, char const *argv[]) {
   double sigma = 1.0e-6;
   double alpha=10;
   double mu = 0.05 / cv::max(sigma,1.e-12);
-
+  int nIter = 50;
 
 
 
   cv::Mat cv_original;
   cv_original = cv::imread("../cameraman.tif", cv::IMREAD_GRAYSCALE);
-  cv::imshow("original", cv_original);
-  cv::waitKey(0);
+  cv::imshow("Original", cv_original);
+  cv::moveWindow("Original", 50, 50);
 
   // LOADS ORIGINAL IMAGE TO A MAT
   Mat img(toMat(cv_original));
@@ -59,8 +59,8 @@ int main(int argc, char const *argv[]) {
   Mat blurred;
   convolute(blurred, img, k);
   cv::imshow("Blurred", toCVMat(blurred));
-  cv::waitKey(0);
-
+  cv::moveWindow("Blurred", 350, 50);
+  cv::waitKey(100);
 
   // GENERATE NOISED MATRIX
   Mat noised;
@@ -91,7 +91,7 @@ int main(int argc, char const *argv[]) {
 
   CMat auxX, auxY;
 
-  CArray S(200);
+  CArray S(nIter);
 
   // GET CONSTANT MATRICES
   CMat conjoDx, conjoDy, Nomin1, Denom1, Denom2;
@@ -101,7 +101,7 @@ int main(int argc, char const *argv[]) {
 
 
 
-  for(int k=0; k<200; ++k) {
+  for(int k=0; k<nIter; ++k) {
     std::cout << "iteracion " << k << " / 200" << std::endl;
     double gamma = beta / mu;
     Denom = Denom1 + gamma * Denom2;
@@ -150,6 +150,7 @@ int main(int argc, char const *argv[]) {
     rop(i,j) = (double) std::real(U(i,j));
 
   cv::imshow("Deblurred", toCVMat(rop));
+  cv::moveWindow("Deblurred", 650, 50);
   cv::waitKey(0);
 
   // TESTING AREA
