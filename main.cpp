@@ -1,4 +1,6 @@
 #include <iostream>
+#include <fstream>
+#include <iomanip>
 #include <opencv2/opencv.hpp>
 #include <cmath>
 #include <vector>
@@ -6,15 +8,28 @@
 #include "fft.hpp"
 #include "misc.hpp"
 
+#include <stdio.h>
 
+void toTXT (Mat &op, const char *fname) {
+  std::ofstream fout;
+  fout.open(fname);
+  fout << std::scientific << std::setprecision(16);
+  for(int i=0; i<op.rows; ++i) {
+    fout << op(i,0);
+    for(int j=1; j<op.cols; ++j)
+      fout << " " << op(i,j);
+    fout << std::endl;
+  }
+  fout.close();
+  return;
+}
 
 int main(int argc, char const *argv[]) {
   // RANDOM NUMBER GENERATOR FROM OPENCV LIB
   cv::RNG rng(12345);
-  // char key;
 
-  // std::cout << std::scientific;
-  // std::cout << std::setprecision(10);
+  std::cout << std::scientific;
+  std::cout << std::setprecision(10);
 
   int kernelSize = 17;
   double kernelSigma = 7;
@@ -27,8 +42,8 @@ int main(int argc, char const *argv[]) {
 
   cv::Mat cv_original;
   cv_original = cv::imread("../cameraman.tif", cv::IMREAD_GRAYSCALE);
-  // cv::imshow("original", cv_original);
-  // key = cv::waitKey(0);
+  cv::imshow("original", cv_original);
+  cv::waitKey(0);
 
   // LOADS ORIGINAL IMAGE TO A MAT
   Mat img(toMat(cv_original));
@@ -43,6 +58,9 @@ int main(int argc, char const *argv[]) {
   // BLUR image
   Mat blurred;
   convolute(blurred, img, k);
+  cv::imshow("Blurred", toCVMat(blurred));
+  cv::waitKey(0);
+
 
   // GENERATE NOISED MATRIX
   Mat noised;
@@ -73,14 +91,18 @@ int main(int argc, char const *argv[]) {
 
   CMat auxX, auxY;
 
-  CArray S(100);
+  CArray S(200);
 
   // GET CONSTANT MATRICES
   CMat conjoDx, conjoDy, Nomin1, Denom1, Denom2;
-  getC (conjoDx, conjoDy, Nomin1, Denom1, Denom2, img, k);
+  getC (conjoDx, conjoDy, Nomin1, Denom1, Denom2, blurred, k);
 
 
-  for(int k=0; k<1; ++k) {
+
+
+
+  for(int k=0; k<200; ++k) {
+    std::cout << "iteracion " << k << " / 200" << std::endl;
     double gamma = beta / mu;
     Denom = Denom1 + gamma * Denom2;
 
@@ -91,10 +113,6 @@ int main(int argc, char const *argv[]) {
     Ux = diffY(U);
     Uy = diffX(U);
 
-    for(int i=0; i<256; ++i)
-    std::cout << std::real(U.data[i]) << endl;
-    std::cout << std::endl;
-
     Wx = shrinft(Ux - Complex(1.0/beta)*PxB, 1.0/beta);
     Wy = shrinft(Uy - Complex(1.0/beta)*PyB, 1.0/beta);
 
@@ -102,9 +120,8 @@ int main(int argc, char const *argv[]) {
     // u-subproblem
     auxX = Wx;
     auxY = Wy;
-    fft(auxX); fftn(auxY);
+    fftn(auxX); fftn(auxY);
     Nomin2 = (conjoDx^auxX) + (conjoDy^auxY);
-    // std::cout << "fft(Wx) = " << auxX << std::endl;
 
     auxX = PxB;
     auxY = PyB;
@@ -112,7 +129,7 @@ int main(int argc, char const *argv[]) {
     Nono = (conjoDx^auxX) + (conjoDy^auxY);
 
     U = (Nomin1 + gamma*Nomin2 + Complex(1.0/mu)*Nono) / Denom;
-    ifft(U);
+    ifftn(U);
     U = real(U);
 
     // UPDATE P
@@ -126,10 +143,15 @@ int main(int argc, char const *argv[]) {
     PyB = Py + alpha * (Py - Py0);
 
     S[k] = snr(CImg, U);
-
   }
 
-  std::cout << "S(0) = " << S[0] << std::endl;
+  Mat rop(U.rows, U.cols);
+  for(int i=0; i<rop.rows; ++i) for(int j=0; j<rop.cols; ++j)
+    rop(i,j) = (double) std::real(U(i,j));
+
+  cv::imshow("Deblurred", toCVMat(rop));
+  cv::waitKey(0);
+
   // TESTING AREA
 
 

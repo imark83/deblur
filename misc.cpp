@@ -63,12 +63,15 @@ void convolute(Mat &rop, const Mat &op, const Mat &kernel) {
     for(int i=0; i<kernel.rows; ++i) for(int j=0; j<kernel.cols; ++j) {
       // COMPUTE CIRCULAR INDECES ON OP MATRIX
       ii =(i+a-mrow);
-      if(ii<0) ii+= op.rows;
+      if(ii<0) ii += op.rows;
+      if(ii>=op.rows) ii -= op.rows;
       jj =(j+b-mcol);
-      if(jj<0) jj+= op.cols;
+      if(jj<0) jj += op.cols;
+      if(jj>=op.cols) jj -= op.cols;
       rop(a,b) += image(ii,jj)*kernel(i,j);
     }
   }
+  return;
 }
 
 
@@ -146,10 +149,7 @@ void getC(CMat &conjoDx, CMat &conjoDy, CMat &Nomin1, CMat &Denom1,
 const double PI = 3.141592653589793;
 CMat shrinft(const CMat &x, double nameta) {
   CMat rop(x.rows, x.cols);
-  double aux = 3.77976314968462*pow(nameta, 0.166666666666667)/4.0;
-  std::cout << "aux = " << aux << std::endl;
-
-  std::cout << "abs(a02) = " << abs(x(0,2)) << std::endl;
+  double aux = 3.77976314968462*pow(nameta, 2.0/3.0)/4.0;
 
   for(int i=0; i<x.rows; ++i)
     for(int j=0; j<x.cols; ++j)
@@ -173,8 +173,10 @@ Mat toMat(const cv::Mat &op) {
 
 cv::Mat toCVMat(const Mat &op) {
   cv::Mat rop(op.rows, op.cols, CV_8UC1);
+  int val;
   for(int i=0; i<rop.rows; ++i) for(int j=0; j<rop.cols; ++j) {
-    rop.data[rop.cols*i+j] =(int) (op(i,j) * 255.0);
+    val = cv::max(cv::min((int) (op(i,j) * 255.0), 255), 0);
+    rop.at<uchar>(i,j) = val;
   }
   return rop;
 }
