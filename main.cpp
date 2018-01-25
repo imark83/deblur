@@ -7,6 +7,7 @@
 #include "matrix/cmat.hpp"
 #include "fft.hpp"
 #include "misc.hpp"
+#include "iadmm.hpp"
 
 #include <stdio.h>
 
@@ -24,6 +25,32 @@ void toTXT (Mat &op, const char *fname) {
   return;
 }
 
+
+void initParameters (int &kernelSize, double &kernelSigma,
+      double &sigma, double &alpha, int &nIter,
+      int argc, const char *argv[]) {
+
+  if (argc > 2)
+    kernelSize = atoi(argv[2]);
+  if (argc > 3)
+    kernelSigma = atof(argv[3]);
+  if (argc > 4)
+    sigma = atof(argv[4]);
+  if (argc > 5)
+    alpha = atof(argv[5]);
+  if (argc > 6)
+    nIter = atoi(argv[6]);
+  return;
+}
+
+
+void help(const char *argv[]) {
+  printf("Ussage:\n%s IMAGE_NAME [kernelSize (17)]"
+          " [kernelSigma (7)] [sigma (1.0e-6)]"
+          " [alpha (10)] [nIter (200)]\n", argv[0]);
+  exit(1);
+}
+
 int main(int argc, char const *argv[]) {
   // RANDOM NUMBER GENERATOR FROM OPENCV LIB
   cv::RNG rng(12345);
@@ -31,17 +58,25 @@ int main(int argc, char const *argv[]) {
   std::cout << std::scientific;
   std::cout << std::setprecision(10);
 
+  if (argc == 1)
+    help(argv);
+
   int kernelSize = 17;
   double kernelSigma = 7;
   double sigma = 1.0e-6;
   double alpha=10;
+  int nIter = 200;
   double mu = 0.05 / cv::max(sigma,1.e-12);
-  int nIter = 500;
+  initParameters (kernelSize, kernelSigma, sigma, alpha, nIter, argc, argv);
 
-
+  std::cout << "kernelSize = " << kernelSize << std::endl;
+  std::cout << "kernelSigma = " << kernelSigma << std::endl;
+  std::cout << "sigma = " << sigma << std::endl;
+  std::cout << "alpha = " << alpha << std::endl;
+  std::cout << "nIter = " << nIter << std::endl;
 
   cv::Mat cv_original;
-  cv_original = cv::imread("../cameraman.tif", cv::IMREAD_GRAYSCALE);
+  cv_original = cv::imread(argv[1], cv::IMREAD_GRAYSCALE);
   cv::imshow("Original", cv_original);
   cv::moveWindow("Original", 50, 50);
 
@@ -56,7 +91,7 @@ int main(int argc, char const *argv[]) {
   fillNoise(noiseData, rng, 0, sigma);
 
   // BLUR image
-  Mat blurred;
+  Mat blurred(img);
   convolute(blurred, img, k);
   cv::imshow("Blurred", toCVMat(blurred));
   cv::moveWindow("Blurred", 350, 50);
@@ -68,86 +103,11 @@ int main(int argc, char const *argv[]) {
   mapMat(noised, 0.0, 1.0);
 
 
+  Mat rop;
+  CArray S;
 
-  // START WITH THE CODE
-  // initialization
-  double beta = 1000.0;
-  CMat U(blurred);
-  // int rows = blurred.rows, cols = blurred.cols;
-  CMat Px(U.rows, U.cols);
-  CMat Py(U.rows, U.cols);
-  CMat Px0(U.rows, U.cols);
-  CMat Py0(U.rows, U.cols);
-  CMat PxB(U.rows, U.cols);
-  CMat PyB(U.rows, U.cols);
-  CMat Ux;
-  CMat Uy;
-  CMat Denom;
-  CMat Nomin2;
-  CMat Wx(U.rows, U.cols);
-  CMat Wy(U.rows, U.cols);
-  CMat Nono;
-  CMat CImg(img);
+  rop = iadmm(S, img, k, blurred, mu, alpha, nIter);
 
-  CMat auxX, auxY;
-
-  CArray S(nIter);
-
-  // GET CONSTANT MATRICES
-  CMat conjoDx, conjoDy, Nomin1, Denom1, Denom2;
-  getC (conjoDx, conjoDy, Nomin1, Denom1, Denom2, blurred, k);
-
-
-
-
-
-  for(int k=0; k<nIter; ++k) {
-    std::cout << "iteracion " << k << " / " << nIter << std::endl;
-    double gamma = beta / mu;
-    Denom = Denom1 + gamma * Denom2;
-
-    // initial p-problem
-    Px0 = Px;
-    Py0 = Py;
-    // w-subproblem
-    Ux = diffY(U);
-    Uy = diffX(U);
-
-    Wx = shrinft(Ux - Complex(1.0/beta)*PxB, 1.0/beta);
-    Wy = shrinft(Uy - Complex(1.0/beta)*PyB, 1.0/beta);
-
-
-    // u-subproblem
-    auxX = Wx;
-    auxY = Wy;
-    fftn(auxX); fftn(auxY);
-    Nomin2 = (conjoDx^auxX) + (conjoDy^auxY);
-
-    auxX = PxB;
-    auxY = PyB;
-    fftn(auxX); fftn(auxY);
-    Nono = (conjoDx^auxX) + (conjoDy^auxY);
-
-    U = (Nomin1 + gamma*Nomin2 + Complex(1.0/mu)*Nono) / Denom;
-    ifftn(U);
-    U = real(U);
-
-    // UPDATE P
-    Ux = diffY(U);
-    Uy = diffX(U);
-
-    Px = PxB + beta*(Wx-Ux);
-    Py = PyB + beta*(Wy-Uy);
-
-    PxB = Px + alpha * (Px - Px0);
-    PyB = Py + alpha * (Py - Py0);
-
-    S[k] = snr(CImg, U);
-  }
-
-  Mat rop(U.rows, U.cols);
-  for(int i=0; i<rop.rows; ++i) for(int j=0; j<rop.cols; ++j)
-    rop(i,j) = (double) std::real(U(i,j));
 
   cv::imshow("Deblurred", toCVMat(rop));
   cv::moveWindow("Deblurred", 650, 50);

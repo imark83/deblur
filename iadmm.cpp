@@ -1,0 +1,92 @@
+#include "matrix/cmat.hpp"
+#include "misc.hpp"
+#include "fft.hpp"
+
+// function [U S]= iadmm(I,H,Bn,mu,opts,alpha)
+
+Mat iadmm(CArray &S, const Mat &img, const Mat &k, const Mat &blurred,
+        double mu, double alpha, int nIter) {
+
+  // START WITH THE CODE
+  // initialization
+  double beta = 1000.0;
+  CMat U(blurred);
+  // int rows = blurred.rows, cols = blurred.cols;
+  CMat Px(U.rows, U.cols);
+  CMat Py(U.rows, U.cols);
+  CMat Px0(U.rows, U.cols);
+  CMat Py0(U.rows, U.cols);
+  CMat PxB(U.rows, U.cols);
+  CMat PyB(U.rows, U.cols);
+  CMat Ux;
+  CMat Uy;
+  CMat Denom;
+  CMat Nomin2;
+  CMat Wx(U.rows, U.cols);
+  CMat Wy(U.rows, U.cols);
+  CMat Nono;
+  CMat CImg(img);
+
+  CMat auxX, auxY;
+
+  S = CArray(nIter);
+
+  // GET CONSTANT MATRICES
+  CMat conjoDx, conjoDy, Nomin1, Denom1, Denom2;
+  getC (conjoDx, conjoDy, Nomin1, Denom1, Denom2, blurred, k);
+
+
+
+
+
+  for(int k=0; k<nIter; ++k) {
+    std::cout << "iteracion " << k << " / " << nIter << std::endl;
+    double gamma = beta / mu;
+    Denom = Denom1 + gamma * Denom2;
+
+    // initial p-problem
+    Px0 = Px;
+    Py0 = Py;
+    // w-subproblem
+    Ux = diffY(U);
+    Uy = diffX(U);
+
+    Wx = shrinft(Ux - Complex(1.0/beta)*PxB, 1.0/beta);
+    Wy = shrinft(Uy - Complex(1.0/beta)*PyB, 1.0/beta);
+
+
+    // u-subproblem
+    auxX = Wx;
+    auxY = Wy;
+    fftn(auxX); fftn(auxY);
+    Nomin2 = (conjoDx^auxX) + (conjoDy^auxY);
+
+    auxX = PxB;
+    auxY = PyB;
+    fftn(auxX); fftn(auxY);
+    Nono = (conjoDx^auxX) + (conjoDy^auxY);
+
+    U = (Nomin1 + gamma*Nomin2 + Complex(1.0/mu)*Nono) / Denom;
+    ifftn(U);
+    U = real(U);
+
+    // UPDATE P
+    Ux = diffY(U);
+    Uy = diffX(U);
+
+    Px = PxB + beta*(Wx-Ux);
+    Py = PyB + beta*(Wy-Uy);
+
+    PxB = Px + alpha * (Px - Px0);
+    PyB = Py + alpha * (Py - Py0);
+
+    S[k] = snr(CImg, U);
+  }
+
+  Mat rop(U.rows, U.cols);
+  for(int i=0; i<rop.rows; ++i) for(int j=0; j<rop.cols; ++j)
+    rop(i,j) = (double) std::real(U(i,j));
+
+  return rop;
+
+}
