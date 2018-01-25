@@ -77,8 +77,11 @@ int main(int argc, char const *argv[]) {
 
   cv::Mat cv_original;
   cv_original = cv::imread(argv[1], cv::IMREAD_GRAYSCALE);
+
+#ifdef BLUR_ME
   cv::imshow("Original", cv_original);
   cv::moveWindow("Original", 50, 50);
+#endif
 
   // LOADS ORIGINAL IMAGE TO A MAT
   Mat img(toMat(cv_original));
@@ -92,25 +95,30 @@ int main(int argc, char const *argv[]) {
 
   // BLUR image
   Mat blurred(img);
+#ifdef BLUR_ME
   convolute(blurred, img, k);
-  cv::imshow("Blurred", toCVMat(blurred));
-  cv::moveWindow("Blurred", 350, 50);
-  cv::waitKey(100);
+#endif
 
   // GENERATE NOISED MATRIX
-  Mat noised;
-  noised = img + noiseData;
+  Mat noised(blurred);
+#ifdef BLUR_ME
+  noised = blurred + noiseData;
   mapMat(noised, 0.0, 1.0);
+#endif
+
+  cv::imshow("Blurred", toCVMat(noised));
+  cv::moveWindow("Blurred", img.cols + 100, 50);
+  cv::waitKey(100);
 
 
   Mat rop;
   CArray S;
 
-  rop = iadmm(S, img, k, blurred, mu, alpha, nIter);
+  rop = iadmm(S, img, k, noised, mu, alpha, nIter);
 
 
   cv::imshow("Deblurred", toCVMat(rop));
-  cv::moveWindow("Deblurred", 650, 50);
+  cv::moveWindow("Deblurred", 2*img.cols + 150, 50);
   cv::waitKey(0);
 
   // TESTING AREA
