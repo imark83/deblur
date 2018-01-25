@@ -36,7 +36,7 @@ int main(int argc, char const *argv[]) {
   double sigma = 1.0e-6;
   double alpha=10;
   double mu = 0.05 / cv::max(sigma,1.e-12);
-  int nIter = 50;
+  int nIter = 500;
 
 
 
@@ -102,7 +102,7 @@ int main(int argc, char const *argv[]) {
 
 
   for(int k=0; k<nIter; ++k) {
-    std::cout << "iteracion " << k << " / 200" << std::endl;
+    std::cout << "iteracion " << k << " / " << nIter << std::endl;
     double gamma = beta / mu;
     Denom = Denom1 + gamma * Denom2;
 
