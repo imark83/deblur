@@ -4,7 +4,8 @@
 
 // function [U S]= iadmm(I,H,Bn,mu,opts,alpha)
 
-Mat iadmm(CArray &S, const Mat &img, const Mat &k, const Mat &blurred,
+Mat iadmm(std::vector<double> &E, CArray &S,
+        const Mat &img, const Mat &k, const Mat &blurred,
         double mu, double alpha, int nIter) {
 
   // START WITH THE CODE
@@ -30,6 +31,7 @@ Mat iadmm(CArray &S, const Mat &img, const Mat &k, const Mat &blurred,
   CMat auxX, auxY;
 
   S = CArray(nIter);
+  E = std::vector<double>(nIter);
 
   // GET CONSTANT MATRICES
   CMat conjoDx, conjoDy, Nomin1, Denom1, Denom2;
@@ -81,6 +83,7 @@ Mat iadmm(CArray &S, const Mat &img, const Mat &k, const Mat &blurred,
     PyB = Py + alpha * (Py - Py0);
 
     S[k] = snr(CImg, U);
+    E[k] = norm(CImg - U);
   }
 
   Mat rop(U.rows, U.cols);

@@ -47,6 +47,13 @@ CMat real(const CMat &op) {
   return rop;
 }
 
+double norm(const CMat &op) {
+  double rop = 0.0;
+  for(int i=1; i<op.rows-1; ++i) for(int j=1; j<op.cols-1; ++j)
+    rop += std::abs(op(i,j))*std::abs(op(i,j));
+  return sqrt(rop);
+}
+
 
 
 // OTHER FUNCTIONS

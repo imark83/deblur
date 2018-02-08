@@ -113,8 +113,9 @@ int main(int argc, char const *argv[]) {
 
   Mat rop;
   CArray S;
+  std::vector<double> E;
 
-  rop = iadmm(S, img, k, noised, mu, alpha, nIter);
+  rop = iadmm(E, S, img, k, noised, mu, alpha, nIter);
 
 
   cv::imshow("Deblurred", toCVMat(rop));
