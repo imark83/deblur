@@ -2,7 +2,7 @@ CC = g++
 COMMON_OBJECTS = fft.o misc.o iadmm.o matrix/cmat.o
 ALL_OBJECTS = $(COMMON_OBJECTS) test.o deblur.o
 LIBS = -lopencv_core -lopencv_highgui -lopencv_imgproc -lopencv_imgcodecs -lfftw3
-CFLAGS = -O2 -std=c++11 -g -Wall
+CFLAGS = -g -std=c++11 -Wall 
 
 test: $(COMMON_OBJECTS) test.o
 	$(CC) -o test $(COMMON_OBJECTS) test.o $(LIBS)

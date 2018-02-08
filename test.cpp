@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <cstdio>
 
 #include <opencv2/opencv.hpp>
 #include "matrix/cmat.hpp"
@@ -18,53 +19,59 @@ std::ostream &operator<<(std::ostream &output, const std::vector<double> &op) {
 }
 
 int main(int argc, char const *argv[]) {
-  // RANDOM NUMBER GENERATOR FROM OPENCV LIB
-  cv::RNG rng(1);
+  int nImages = 2;
+  for(int k=0; k<nImages; ++k) {
+    // RANDOM NUMBER GENERATOR FROM OPENCV LIB
+    cv::RNG rng(1);
 
-  // PARAMETERS
-  int kernelSize = 17;
-  double kernelSigma = 7;
-  double sigma = 1.0e-6;
-  double alpha=10;
-  int nIter = 1000;
-  double mu = 0.05 / cv::max(sigma,1.e-12);
+    // PARAMETERS
+    int kernelSize = 17;
+    double kernelSigma = 7;
+    double sigma = 1.0e-6;
+    double alpha=10;
+    int nIter = 100;
+    double mu = 0.05 / cv::max(sigma,1.e-12);
 
-  cv::Mat cv_original1 = cv::imread("../cameraman.tif", cv::IMREAD_GRAYSCALE);
-  // LOADS ORIGINAL IMAGE TO A MAT
-  Mat I1(toMat(cv_original1));
+    char fname[100];
+    string imageName[] = {"../cameraman.tif", "../lena.jpg"};
 
-  // GENERATES KERNEL FOR BLURRING
-  Mat H(kernel(kernelSize, kernelSigma));
+    cv::Mat cv_original = cv::imread(imageName[k], cv::IMREAD_GRAYSCALE);
+    // LOADS ORIGINAL IMAGE TO A MAT
+    Mat I(toMat(cv_original));
 
-  // BLUR IMAGE WITH GAUSSIAN FILTER
-  Mat B1;
-  convolute(B1,I1,H);
+    // GENERATES KERNEL FOR BLURRING
+    Mat H(kernel(kernelSize, kernelSigma));
 
-  // GENERATES NOISE DATA
-  Mat noiseData(I1.rows, I1.cols);
-  fillNoise(noiseData, rng, 0, sigma);
+    // BLUR IMAGE WITH GAUSSIAN FILTER
+    Mat B;
+    convolute(B,I,H);
 
-  // GENERATE NOISED MATRIX
-  Mat Bn1(I1.rows, I1.cols);
-  Bn1 = B1 + noiseData;
-  mapMat(Bn1, 0.0, 1.0);
+    // GENERATES NOISE DATA
+    Mat noiseData(I.rows, I.cols);
+    fillNoise(noiseData, rng, 0, sigma);
 
-
-  Mat rop;
-  CArray S1;
-  std::vector<double> E1;
-  rop = iadmm(E1, S1, I1, H, Bn1, mu, alpha, nIter);
+    // GENERATE NOISED MATRIX
+    Mat Bn(I.rows, I.cols);
+    Bn = B + noiseData;
+    mapMat(Bn, 0.0, 1.0);
 
 
-  std::ofstream fout;
-  fout.open("testData/s1.txt");
-  fout << S1 << std::endl;
-  fout.close();
+    Mat rop;
+    CArray S;
+    std::vector<double> E;
+    rop = iadmm(E, S, I, H, Bn, mu, alpha, nIter);
 
-  fout.open("testData/e1.txt");
-  fout << E1 << std::endl;
-  fout.close();
+    sprintf(fname, "testData/s%02i.txt", k);
+    std::ofstream fout;
+    fout.open(fname);
+    fout << S << std::endl;
+    fout.close();
 
+    sprintf(fname, "testData/e%02i.txt", k);
+    fout.open(fname);
+    fout << E << std::endl;
+    fout.close();
+  }
 
   return 0;
 }
