@@ -54,6 +54,30 @@ double norm(const CMat &op) {
   return sqrt(rop);
 }
 
+// SIGN OF REAL PART
+CMat sign(const CMat &op) {
+  CMat rop(op.rows, op.cols);
+  for(int i=0; i<op.rows; ++i) for(int j=0; j<op.cols; ++j)
+    if (((double) std::real(op(i,j))) < 0) rop(i,j) = -1.0;
+    else if (((double) std::real(op(i,j))) > 0) rop(i,j) = 1.0;
+    else rop(i,j) = 0.0;
+
+  return rop;
+}
+
+
+// max between real part of CMat and number
+CMat max(const CMat &op1, double op2) {
+  CMat rop(op1.rows, op1.cols);
+  for(int i=0; i<rop.rows; ++i) for(int j=0; j<rop.cols; ++j)
+    if((std::real(rop(i,j))) > op2)
+      rop(i,j) = op1(i,j);
+    else
+      rop(i,j) = op2;
+
+  return rop;
+}
+
 
 
 // OTHER FUNCTIONS

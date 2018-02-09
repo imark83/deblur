@@ -105,6 +105,15 @@ Mat_<T> operator-(const Mat_<T> &op1, const Mat_<T> &op2) {
   return rop;
 }
 
+template <class T>
+Mat_<T> operator-(const Mat_<T> &op1, const T op2) {
+  Mat_<T> rop(op1.rows, op1.cols);
+  for(int i=0; i<op1.rows; ++i) for(int j=0; j<op1.cols; ++j)
+    rop(i,j) = op1(i,j) - op2;
+
+  return rop;
+}
+
 
 // SCALAR PRODUCT
 template <class T>

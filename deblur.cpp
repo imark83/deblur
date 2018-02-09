@@ -7,7 +7,7 @@
 #include "matrix/cmat.hpp"
 #include "fft.hpp"
 #include "misc.hpp"
-#include "iadmm.hpp"
+#include "admm.hpp"
 
 #include <stdio.h>
 
@@ -31,23 +31,23 @@ void initParameters (int &kernelSize, double &kernelSigma,
       int argc, const char *argv[]) {
 
   if (argc > 2)
-    kernelSize = atoi(argv[2]);
+    nIter = atoi(argv[2]);
   if (argc > 3)
-    kernelSigma = atof(argv[3]);
+    kernelSize = atoi(argv[3]);
   if (argc > 4)
-    sigma = atof(argv[4]);
+    kernelSigma = atof(argv[4]);
   if (argc > 5)
-    alpha = atof(argv[5]);
+    sigma = atof(argv[5]);
   if (argc > 6)
-    nIter = atoi(argv[6]);
+    alpha = atof(argv[6]);
   return;
 }
 
 
 void help(const char *argv[]) {
-  printf("Ussage:\n%s IMAGE_NAME [kernelSize (17)]"
-          " [kernelSigma (7)] [sigma (1.0e-6)]"
-          " [alpha (10)] [nIter (200)]\n", argv[0]);
+  printf("Ussage:\n%s IMAGE_NAME [nIter (200)]"
+          "[kernelSize (17)] [kernelSigma (7)]"
+          " [sigma (1.0e-6)]" " [alpha (10)] \n", argv[0]);
   exit(1);
 }
 
@@ -69,16 +69,16 @@ int main(int argc, char const *argv[]) {
   double mu = 0.05 / cv::max(sigma,1.e-12);
   initParameters (kernelSize, kernelSigma, sigma, alpha, nIter, argc, argv);
 
+  std::cout << "nIter = " << nIter << std::endl;
   std::cout << "kernelSize = " << kernelSize << std::endl;
   std::cout << "kernelSigma = " << kernelSigma << std::endl;
   std::cout << "sigma = " << sigma << std::endl;
   std::cout << "alpha = " << alpha << std::endl;
-  std::cout << "nIter = " << nIter << std::endl;
 
   cv::Mat cv_original;
   cv_original = cv::imread(argv[1], cv::IMREAD_GRAYSCALE);
 
-#ifdef BLUR_ME
+#ifndef DONT_BLUR_ME
   cv::imshow("Original", cv_original);
   cv::moveWindow("Original", 50, 50);
 #endif
@@ -95,13 +95,13 @@ int main(int argc, char const *argv[]) {
 
   // BLUR image
   Mat blurred(img);
-#ifdef BLUR_ME
+#ifndef DONT_BLUR_ME
   convolute(blurred, img, k);
 #endif
 
   // GENERATE NOISED MATRIX
   Mat noised(blurred);
-#ifdef BLUR_ME
+#ifndef DONT_BLUR_ME
   noised = blurred + noiseData;
   mapMat(noised, 0.0, 1.0);
 #endif
@@ -115,7 +115,7 @@ int main(int argc, char const *argv[]) {
   CArray S;
   std::vector<double> E;
 
-  rop = iadmm(E, S, img, k, noised, mu, alpha, nIter);
+  rop = admm(E, S, img, k, noised, mu, alpha, nIter);
 
 
   cv::imshow("Deblurred", toCVMat(rop));

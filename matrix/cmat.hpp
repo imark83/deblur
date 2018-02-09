@@ -53,4 +53,10 @@ CMat real(const CMat &op);
 double norm(const CMat &op);
 
 
+// sign of real part
+CMat sign(const CMat &op);
+
+// max between real part of CMat and number
+CMat max(const CMat &op1, double op2);
+
 #endif

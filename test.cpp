@@ -5,6 +5,7 @@
 #include <opencv2/opencv.hpp>
 #include "matrix/cmat.hpp"
 #include "misc.hpp"
+#include "admm.hpp"
 #include "iadmm.hpp"
 
 std::ostream &operator<<(std::ostream &output, const CArray &op) {
@@ -61,13 +62,26 @@ int main(int argc, char const *argv[]) {
     std::vector<double> E;
     rop = iadmm(E, S, I, H, Bn, mu, alpha, nIter);
 
-    sprintf(fname, "testData/s%02i.txt", k);
+    sprintf(fname, "testData/s%02i-iadmm.txt", k);
     std::ofstream fout;
     fout.open(fname);
     fout << S << std::endl;
     fout.close();
 
-    sprintf(fname, "testData/e%02i.txt", k);
+    sprintf(fname, "testData/e%02i-iadmm.txt", k);
+    fout.open(fname);
+    fout << E << std::endl;
+    fout.close();
+
+
+    rop = admm(E, S, I, H, Bn, mu, alpha, nIter);
+
+    sprintf(fname, "testData/s%02i-admm.txt", k);
+    fout.open(fname);
+    fout << S << std::endl;
+    fout.close();
+
+    sprintf(fname, "testData/e%02i-admm.txt", k);
     fout.open(fname);
     fout << E << std::endl;
     fout.close();
