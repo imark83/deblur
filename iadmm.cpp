@@ -5,7 +5,7 @@
 // function [U S]= iadmm(I,H,Bn,mu,opts,alpha)
 
 Mat iadmm(std::vector<double> &E, CArray &S,
-        const Mat &img, const Mat &k, const Mat &blurred,
+        const Mat &img, const Mat &ker, const Mat &blurred,
         double mu, double alpha, int nIter) {
 
   // START WITH THE CODE
@@ -32,11 +32,13 @@ Mat iadmm(std::vector<double> &E, CArray &S,
 
   S = CArray(nIter);
   E = std::vector<double>(nIter);
+  CArray T = CArray(nIter);
 
   // GET CONSTANT MATRICES
   CMat conjoDx, conjoDy, Nomin1, Denom1, Denom2;
-  getC (conjoDx, conjoDy, Nomin1, Denom1, Denom2, blurred, k);
+  getC (conjoDx, conjoDy, Nomin1, Denom1, Denom2, blurred, ker);
 
+  Mat aux(U.rows, U.cols);
 
 
 
@@ -73,8 +75,8 @@ Mat iadmm(std::vector<double> &E, CArray &S,
     U = real(U);
 
     // UPDATE P
-    Ux = diffY(U);
-    Uy = diffX(U);
+    Ux = diffY(U);  // CALCULO REDUNDANTE !!!!!!!!!!
+    Uy = diffX(U);  // CALCULO REDUNDANTE !!!!!!!!!!
 
     Px = PxB + beta*(Wx-Ux);
     Py = PyB + beta*(Wy-Uy);
@@ -84,6 +86,17 @@ Mat iadmm(std::vector<double> &E, CArray &S,
 
     S[k] = snr(CImg, U);
     E[k] = norm(CImg - U);
+    T[k] = sqrt(norm(Ux)*norm(Ux) + norm(Uy)*norm(Uy));
+
+    for(int i=0; i<aux.rows; ++i) for(int j=0; j<aux.cols; ++j)
+      aux(i,j) = (double) std::real(U(i,j));
+    convolute(aux, aux, ker);
+    auxX = CMat(aux);
+
+
+    T[k] += 0.5*mu*norm(auxX - blurred);
+    std::cout << "tv = " << T[k] << std::endl << std::endl;
+
   }
 
   Mat rop(U.rows, U.cols);

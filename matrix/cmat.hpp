@@ -50,7 +50,8 @@ void getRand(CMat &);
 CMat conj(const CMat &op);
 CMat abs(const CMat &op);
 CMat real(const CMat &op);
-double norm(const CMat &op);
+double norm(const CMat &op, int n=2);
+double norm2(const CMat &op);
 
 
 // sign of real part
