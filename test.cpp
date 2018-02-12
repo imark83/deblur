@@ -30,7 +30,7 @@ int main(int argc, char const *argv[]) {
     double kernelSigma = 7;
     double sigma = 1.0e-6;
     double alpha=10;
-    int nIter = 100;
+    int nIter = 1000;
     double mu = 0.05 / cv::max(sigma,1.e-12);
 
     char fname[100];
@@ -58,33 +58,27 @@ int main(int argc, char const *argv[]) {
 
 
     Mat rop;
-    CArray S;
-    std::vector<double> E;
-    rop = iadmm(E, S, I, H, Bn, mu, alpha, nIter);
-
-    sprintf(fname, "testData/s%02i-iadmm.txt", k);
+    std::vector<double> OBJ, E, TV, S;
     std::ofstream fout;
+
+    rop = admm(OBJ, TV, E, S, I, H, Bn, mu, alpha, nIter);
+    sprintf(fname, "testData/admm-%02i.txt", k);
     fout.open(fname);
-    fout << S << std::endl;
+    for(int i=0; i<nIter; ++i)
+      fout << i << " " << OBJ[i] << " " << TV[i]
+            << " " << E[i] << " " << S[i] << std::endl;
     fout.close();
 
-    sprintf(fname, "testData/e%02i-iadmm.txt", k);
+
+    rop = iadmm(OBJ, TV, E, S, I, H, Bn, mu, alpha, nIter);
+
+    sprintf(fname, "testData/iadmm-%02i.txt", k);
     fout.open(fname);
-    fout << E << std::endl;
+    for(int i=0; i<nIter; ++i)
+      fout << i << " " << OBJ[i] << " " << TV[i]
+            << " " << E[i] << " " << S[i] << std::endl;
     fout.close();
 
-
-    rop = admm(E, S, I, H, Bn, mu, alpha, nIter);
-
-    sprintf(fname, "testData/s%02i-admm.txt", k);
-    fout.open(fname);
-    fout << S << std::endl;
-    fout.close();
-
-    sprintf(fname, "testData/e%02i-admm.txt", k);
-    fout.open(fname);
-    fout << E << std::endl;
-    fout.close();
   }
 
   return 0;

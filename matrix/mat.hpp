@@ -123,10 +123,22 @@ Mat_<T> operator*(const T op1, const Mat_<T> &op2) {
     rop(i,j) = op1 * op2(i,j);
   return rop;
 }
+
+// SCALAR DIVISION
+template <class T>
+Mat_<T> operator/(const Mat_<T> &op1, T op2) {
+  if (op2 == T(0)) {
+    std::cerr << "Division by zero. Bad result" << std::endl;
+    exit(1);
+  }
+  return (T(1)/op2) * op1;
+}
+
 template <class T>
 Mat_<T> operator*(const Mat_<T> &op1, const T op2) {
   return op2*op1;
 }
+
 // MATRIX PRODUCT
 template <class T>
 Mat_<T> operator*(const Mat_<T> &op1, const Mat_<T> &op2) {
@@ -177,6 +189,8 @@ Mat_<T> operator/(const Mat_<T> &op1, const Mat_<T> &op2) {
 
   return rop;
 }
+
+
 
 // POINT SQUARE
 template <class T>

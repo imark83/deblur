@@ -49,14 +49,22 @@ CMat real(const CMat &op) {
 
 double norm(const CMat &op, int n) {
   switch (n) {
+    case 1: return norm1(op);
     default: return norm2(op);
   }
   return 0.0;
 }
 
+double norm1(const CMat &op) {
+  double rop = 0.0;
+  for(int i=0; i<op.rows; ++i) for(int j=0; j<op.cols; ++j)
+    rop += std::abs(op(i,j));
+  return rop;
+}
+
 double norm2(const CMat &op) {
   double rop = 0.0;
-  for(int i=1; i<op.rows-1; ++i) for(int j=1; j<op.cols-1; ++j)
+  for(int i=0; i<op.rows; ++i) for(int j=0; j<op.cols; ++j)
     rop += std::abs(op(i,j))*std::abs(op(i,j));
   return sqrt(rop);
 }
@@ -157,8 +165,19 @@ CMat operator* (const Complex &op1, const Mat &op2) {
   return rop;
 }
 
-// MATRIX PRODUCT
+CMat operator/(const CMat &op1, double op2) {
+  if (op2 == 0.0) {
+    std::cerr << "Division by zero. Bad result" << std::endl;
+    exit(1);
+  }
+  CMat rop(op1.rows, op1.cols);
+  for(int i=0; i<rop.rows; ++i) for(int j=0; j<rop.cols; ++j)
+    rop(i,j) = op1(i,j) / op2;
 
+  return rop;
+}
+
+// MATRIX PRODUCT
 CMat operator* (const CMat &op1, const Mat &op2) {
   if (op1.cols != op2.rows) {
     std::cerr << "Dimensions missmatch" << '\n';
@@ -174,7 +193,17 @@ CMat operator* (const CMat &op1, const Mat &op2) {
 }
 
 CMat operator* (const Mat &op1, const CMat &op2) {
-  return op2*op1;
+  if (op1.cols != op2.rows) {
+    std::cerr << "Dimensions missmatch" << '\n';
+    exit(1);
+  }
+  CMat rop (op1.rows, op2.cols);
+  for (int i=0; i<rop.rows; ++i) for (int j=0; j<rop.cols; ++j) {
+    rop(i,j) = 0;
+    for (int k=0; k<op1.cols; ++k)
+      rop(i,j) = rop(i,j) + op1(i,k)*op2(k,j);
+  }
+  return rop;
 }
 
 // POINT PRODUCT OPERATOR
@@ -191,5 +220,13 @@ CMat operator^ (const CMat &op1, const Mat &op2) {
 }
 
 CMat operator^ (const Mat &op1, const CMat &op2) {
-  return op2^op1;
+  if (op1.rows != op2.rows || op1.cols != op2.cols) {
+    std::cerr << "Dimensions missmatch" << '\n';
+    exit(1);
+  }
+  CMat rop (op1.rows, op1.cols);
+  for (int i=0; i<rop.rows; ++i) for (int j=0; j<rop.cols; ++j)
+    rop(i,j) = op1(i,j) * op2(i,j);
+
+  return rop;
 }

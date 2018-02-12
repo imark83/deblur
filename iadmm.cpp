@@ -4,7 +4,8 @@
 
 // function [U S]= iadmm(I,H,Bn,mu,opts,alpha)
 
-Mat iadmm(std::vector<double> &E, CArray &S,
+Mat iadmm(std::vector<double> &OBJ, std::vector<double> &TV,
+        std::vector<double> &E, std::vector<double> &S,
         const Mat &img, const Mat &ker, const Mat &blurred,
         double mu, double alpha, int nIter) {
 
@@ -29,19 +30,23 @@ Mat iadmm(std::vector<double> &E, CArray &S,
   CMat CImg(img);
 
   CMat auxX, auxY;
+  Mat aux(U.rows, U.cols);
 
-  S = CArray(nIter);
+
+
+  S = std::vector<double>(nIter);
   E = std::vector<double>(nIter);
-  CArray T = CArray(nIter);
+  TV = std::vector<double>(nIter);
+  OBJ = std::vector<double>(nIter);
 
   // GET CONSTANT MATRICES
   CMat conjoDx, conjoDy, Nomin1, Denom1, Denom2;
   getC (conjoDx, conjoDy, Nomin1, Denom1, Denom2, blurred, ker);
 
-  Mat aux(U.rows, U.cols);
 
-
-
+  // INITIALIZE Ux, Uy
+  Ux = diffY(U);
+  Uy = diffX(U);
 
   for(int k=0; k<nIter; ++k) {
     std::cout << "iteracion " << k << " / " << nIter << std::endl;
@@ -52,11 +57,12 @@ Mat iadmm(std::vector<double> &E, CArray &S,
     Px0 = Px;
     Py0 = Py;
     // w-subproblem
-    Ux = diffY(U);
-    Uy = diffX(U);
 
-    Wx = shrinft(Ux - Complex(1.0/beta)*PxB, 1.0/beta);
-    Wy = shrinft(Uy - Complex(1.0/beta)*PyB, 1.0/beta);
+    // Ux = diffY(U);
+    // Uy = diffX(U);
+
+    Wx = shrinft(Ux - PxB/beta, 1.0/beta);
+    Wy = shrinft(Uy - PyB/beta, 1.0/beta);
 
 
     // u-subproblem
@@ -70,13 +76,13 @@ Mat iadmm(std::vector<double> &E, CArray &S,
     fftn(auxX); fftn(auxY);
     Nono = (conjoDx^auxX) + (conjoDy^auxY);
 
-    U = (Nomin1 + gamma*Nomin2 + Complex(1.0/mu)*Nono) / Denom;
+    U = (Nomin1 + gamma*Nomin2 + Nono/mu) / Denom;
     ifftn(U);
     U = real(U);
 
     // UPDATE P
-    Ux = diffY(U);  // CALCULO REDUNDANTE !!!!!!!!!!
-    Uy = diffX(U);  // CALCULO REDUNDANTE !!!!!!!!!!
+    Ux = diffY(U);
+    Uy = diffX(U);
 
     Px = PxB + beta*(Wx-Ux);
     Py = PyB + beta*(Wy-Uy);
@@ -84,18 +90,34 @@ Mat iadmm(std::vector<double> &E, CArray &S,
     PxB = Px + alpha * (Px - Px0);
     PyB = Py + alpha * (Py - Py0);
 
-    S[k] = snr(CImg, U);
-    E[k] = norm(CImg - U);
-    T[k] = sqrt(norm(Ux)*norm(Ux) + norm(Uy)*norm(Uy));
 
+
+    // PLOT
     for(int i=0; i<aux.rows; ++i) for(int j=0; j<aux.cols; ++j)
       aux(i,j) = (double) std::real(U(i,j));
+    cv::imshow("test", toCVMat(aux));
+    cv::waitKey(10);
+
+    for(int i=0; i<aux.rows; ++i) for(int j=0; j<aux.cols; ++j)
+      aux(i,j) = (double) std::real(U(i,j)-CImg(i,j))*20.0;
+    cv::imshow("test2", toCVMat(aux));
+    cv::waitKey(10);
+
+
+    // COMPUTE METADATA
+    S[k] = std::real(snr(CImg, U));
+    E[k] = norm(CImg - U);
+    TV[k] = norm(Ux, 1) + norm(Uy, 1);
+
+    for(int i=0; i<aux.rows; ++i) for(int j=0; j<aux.cols; ++j)
+      aux(i,j) = std::real(U(i,j));
     convolute(aux, aux, ker);
-    auxX = CMat(aux);
+    auxX = CMat(aux) - blurred;
 
-
-    T[k] += 0.5*mu*norm(auxX - blurred);
-    std::cout << "tv = " << T[k] << std::endl << std::endl;
+    OBJ[k] = TV[k]
+        + 0.5*mu*norm2(auxX)*norm2(auxX);
+    std::cout << "tv = " << TV[k] << "   ";
+    std::cout << "obj = " << OBJ[k] << std::endl << std::endl;
 
   }
 

@@ -5,7 +5,8 @@
 #include "matrix/cmat.hpp"
 typedef std::vector<std::complex<double> > CArray;
 
-Mat iadmm(std::vector<double> &error, CArray &S,
+Mat iadmm(std::vector<double> &OBJ, std::vector<double> &TV,
+        std::vector<double> &E, std::vector<double> &S,
         const Mat &img, const Mat &k, const Mat &blurred,
         double mu, double alpha, int nIter);
 

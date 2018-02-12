@@ -8,6 +8,7 @@
 #include "fft.hpp"
 #include "misc.hpp"
 #include "admm.hpp"
+#include "iadmm.hpp"
 
 #include <stdio.h>
 
@@ -112,14 +113,20 @@ int main(int argc, char const *argv[]) {
 
 
   Mat rop;
-  CArray S;
-  std::vector<double> E;
+  std::vector<double> OBJ, E, TV, S;
 
-  rop = admm(E, S, img, k, noised, mu, alpha, nIter);
+  rop = admm(OBJ, TV, E, S, img, k, noised, mu, alpha, nIter);
 
 
-  cv::imshow("Deblurred", toCVMat(rop));
-  cv::moveWindow("Deblurred", 2*img.cols + 150, 50);
+  cv::imshow("Deblurred ADMM", toCVMat(rop));
+  cv::moveWindow("Deblurred ADMM", 2*img.cols + 150, 50);
+  cv::waitKey(100);
+
+  rop = iadmm(OBJ, TV, E, S, img, k, noised, mu, alpha, nIter);
+
+
+  cv::imshow("Deblurred iadmm", toCVMat(rop));
+  cv::moveWindow("Deblurred iadmm", 3*img.cols + 200, 50);
   cv::waitKey(0);
 
   // TESTING AREA

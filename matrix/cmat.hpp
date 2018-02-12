@@ -33,6 +33,7 @@ CMat operator-(const CMat &op1, const Mat &op2);
 // SCALAR PRODUCT
 CMat operator*(double op1, const CMat &op2);
 CMat operator*(const Complex &op1, const Mat &op2);
+CMat operator/(const CMat &op1, double op2);
 
 // MATRIX PRODUCT
 CMat operator*(const CMat &op1, const Mat &op2);
@@ -52,7 +53,7 @@ CMat abs(const CMat &op);
 CMat real(const CMat &op);
 double norm(const CMat &op, int n=2);
 double norm2(const CMat &op);
-
+double norm1(const CMat &op);
 
 // sign of real part
 CMat sign(const CMat &op);

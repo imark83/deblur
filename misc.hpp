@@ -70,7 +70,6 @@ T var(const Mat_<T> &op) {
 }
 
 
-
 // FUNCTION SNR
 template <class T>
 T snr(Mat_<T> &ref, Mat_<T> &sig) {
@@ -78,33 +77,5 @@ T snr(Mat_<T> &ref, Mat_<T> &sig) {
   T dv = var(ref);
   return 10.0 * log10(dv/mse);
 }
-
-// FUNCTION SNR2
-template <class T>
-T snr2(Mat_<T> &ref, Mat_<T> &sig) {
-  T m = mean(ref);
-  T mse = (mean(pow2(ref-sig)));
-  T dv = var(ref);
-  return 10.0 * log10(dv/mse);
-}
-
-/*function x = snr(ref, sig)
-% snr -- Compute Signal-to-Noise Ratio for images
-%
-% Usage:
-%       x = snr(ref, sig)
-%
-% Input:
-%       ref         Reference image
-%       sig         Modified image
-%
-% Output:
-%       x           SNR value
-
-mse = mean((ref(:)-sig(:)).^2);
-dv = var(ref(:),1);
-x = 10*log10(dv/mse);
-*/
-
 
 #endif
