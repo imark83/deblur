@@ -29,12 +29,12 @@ int main(int argc, char const *argv[]) {
     int kernelSize = 17;
     double kernelSigma = 7;
     double sigma = 1.0e-6;
-    double alpha=10;
-    int nIter = 1000;
-    double mu = 0.05 / cv::max(sigma,1.e-12);
+    double alpha=0.1;
+    int nIter = 10000;
+    double mu = 1e12; //0.05 / cv::max(sigma,1.e-12);
 
     char fname[100];
-    string imageName[] = {"../cameraman.tif", "../lena.jpg"};
+    string imageName[] = {"../cameraman.tif", "../lena256.png"};
 
     cv::Mat cv_original = cv::imread(imageName[k], cv::IMREAD_GRAYSCALE);
     // LOADS ORIGINAL IMAGE TO A MAT

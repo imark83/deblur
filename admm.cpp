@@ -7,6 +7,14 @@
 
 // function [U S]= iadmm(I,H,Bn,mu,opts,alpha)
 
+
+double getTV(const CMat &Ux, const CMat &Uy) {
+  double rop = 0.0;
+  for(int i=0; i<Ux.rows; ++i) for(int j=0; j<Ux.cols; ++j)
+    rop += std::abs(Ux(i,j)) + std::abs(Uy(i,j));
+  return 0.5*sqrt(rop);
+}
+
 Mat admm(std::vector<double> &OBJ, std::vector<double> &TV,
         std::vector<double> &E, std::vector<double> &S,
         const Mat &img, const Mat &ker, const Mat &blurred,
@@ -42,16 +50,16 @@ Mat admm(std::vector<double> &OBJ, std::vector<double> &TV,
   CMat conjoDx, conjoDy, Nomin1, Denom1, Denom2;
   getC (conjoDx, conjoDy, Nomin1, Denom1, Denom2, blurred, ker);
 
+  double gamma = beta / mu;
+  Denom = Denom1 + gamma*Denom2;
+  // w-subproblem
+  Ux = diffY(U);
+  Uy = diffX(U);
 
   for(int k=0; k<nIter; ++k) {
     std::cout << "iteracion " << k << " / " << nIter << std::endl;
-    double gamma = beta / mu;
-    Denom = Denom1 + gamma*Denom2;
 
 
-    // w-subproblem
-    Ux = diffY(U);
-    Uy = diffX(U);
 
     Wx = sign(Ux)^max(
         abs(Ux-Px/beta)-Complex(1.0/beta),
@@ -97,11 +105,16 @@ Mat admm(std::vector<double> &OBJ, std::vector<double> &TV,
     cv::imshow("test2", toCVMat(aux));
     cv::waitKey(10);
 
+    for(int i=0; i<aux.rows; ++i) for(int j=0; j<aux.cols; ++j)
+      aux(i,j) = (double) std::real(std::abs(Ux(i,j))+std::abs(Uy(i,j)));
+    cv::imshow("test3", toCVMat(aux));
+    cv::waitKey(10);
+
 
     // COMPUTE METADATA
-    S[k] = real(snr(CImg, U));
+    S[k] = std::real(snr(CImg, U));
     E[k] = norm(CImg - U);
-    TV[k] = norm(Ux, 1) + norm(Uy, 1);
+    TV[k] = norm(Ux, 2) + norm(Uy, 2);
 
     for(int i=0; i<aux.rows; ++i) for(int j=0; j<aux.cols; ++j)
       aux(i,j) = std::real(U(i,j));
@@ -111,7 +124,8 @@ Mat admm(std::vector<double> &OBJ, std::vector<double> &TV,
     OBJ[k] = TV[k]
         + 0.5*mu*norm2(auxX)*norm2(auxX);
     std::cout << "tv = " << TV[k] << "   ";
-    std::cout << "obj = " << OBJ[k] << std::endl << std::endl;
+    std::cout << "obj = " << OBJ[k] << "  ";
+    std::cout << "err = " << E[k] << std::endl << std::endl;
 
   }
 

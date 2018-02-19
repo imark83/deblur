@@ -47,19 +47,16 @@ Mat iadmm(std::vector<double> &OBJ, std::vector<double> &TV,
   // INITIALIZE Ux, Uy
   Ux = diffY(U);
   Uy = diffX(U);
+  double gamma = beta / mu;
+  Denom = Denom1 + gamma * Denom2;
 
   for(int k=0; k<nIter; ++k) {
     std::cout << "iteracion " << k << " / " << nIter << std::endl;
-    double gamma = beta / mu;
-    Denom = Denom1 + gamma * Denom2;
 
     // initial p-problem
     Px0 = Px;
     Py0 = Py;
     // w-subproblem
-
-    // Ux = diffY(U);
-    // Uy = diffX(U);
 
     Wx = shrinft(Ux - PxB/beta, 1.0/beta);
     Wy = shrinft(Uy - PyB/beta, 1.0/beta);
@@ -104,10 +101,16 @@ Mat iadmm(std::vector<double> &OBJ, std::vector<double> &TV,
     cv::waitKey(10);
 
 
+    for(int i=0; i<aux.rows; ++i) for(int j=0; j<aux.cols; ++j)
+      aux(i,j) = (double) std::real(std::abs(Ux(i,j))+std::abs(Uy(i,j)));
+    cv::imshow("test3", toCVMat(aux));
+    cv::waitKey(10);
+
+
     // COMPUTE METADATA
     S[k] = std::real(snr(CImg, U));
     E[k] = norm(CImg - U);
-    TV[k] = norm(Ux, 1) + norm(Uy, 1);
+    TV[k] = norm(Ux, 2) + norm(Uy, 2);
 
     for(int i=0; i<aux.rows; ++i) for(int j=0; j<aux.cols; ++j)
       aux(i,j) = std::real(U(i,j));
@@ -117,7 +120,8 @@ Mat iadmm(std::vector<double> &OBJ, std::vector<double> &TV,
     OBJ[k] = TV[k]
         + 0.5*mu*norm2(auxX)*norm2(auxX);
     std::cout << "tv = " << TV[k] << "   ";
-    std::cout << "obj = " << OBJ[k] << std::endl << std::endl;
+    std::cout << "obj = " << OBJ[k] << "  ";
+    std::cout << "err = " << E[k] << std::endl << std::endl;
 
   }
 

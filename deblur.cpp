@@ -65,9 +65,9 @@ int main(int argc, char const *argv[]) {
   int kernelSize = 17;
   double kernelSigma = 7;
   double sigma = 1.0e-6;
-  double alpha=10;
+  double alpha = 0.1;
   int nIter = 200;
-  double mu = 0.05 / cv::max(sigma,1.e-12);
+  double mu = 1.0e12; //0.05 / cv::max(sigma,1.e-12);
   initParameters (kernelSize, kernelSigma, sigma, alpha, nIter, argc, argv);
 
   std::cout << "nIter = " << nIter << std::endl;
