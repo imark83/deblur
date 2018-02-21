@@ -20,7 +20,7 @@ std::ostream &operator<<(std::ostream &output, const std::vector<double> &op) {
 }
 
 int main(int argc, char const *argv[]) {
-  int nImages = 2;
+  int nImages = 3;
   for(int k=0; k<nImages; ++k) {
     // RANDOM NUMBER GENERATOR FROM OPENCV LIB
     cv::RNG rng(1);
@@ -30,11 +30,11 @@ int main(int argc, char const *argv[]) {
     double kernelSigma = 7;
     double sigma = 1.0e-6;
     double alpha=0.1;
-    int nIter = 10000;
+    int nIter = 1000;
     double mu = 1e12; //0.05 / cv::max(sigma,1.e-12);
 
     char fname[100];
-    string imageName[] = {"../cameraman.tif", "../lena256.png"};
+    string imageName[] = {"../cameraman.tif", "../lena256.png", "../man256.png"};
 
     cv::Mat cv_original = cv::imread(imageName[k], cv::IMREAD_GRAYSCALE);
     // LOADS ORIGINAL IMAGE TO A MAT

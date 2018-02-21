@@ -110,7 +110,7 @@ Mat iadmm(std::vector<double> &OBJ, std::vector<double> &TV,
     // COMPUTE METADATA
     S[k] = std::real(snr(CImg, U));
     E[k] = norm(CImg - U);
-    TV[k] = norm(Ux, 2) + norm(Uy, 2);
+    TV[k] = norm(Ux, 1) + norm(Uy, 1);
 
     for(int i=0; i<aux.rows; ++i) for(int j=0; j<aux.cols; ++j)
       aux(i,j) = std::real(U(i,j));
