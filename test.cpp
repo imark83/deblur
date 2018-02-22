@@ -30,15 +30,18 @@ int main(int argc, char const *argv[]) {
     double kernelSigma = 7;
     double sigma = 1.0e-6;
     double alpha=0.1;
-    int nIter = 1000;
+    int nIter = 100;
     double mu = 1e12; //0.05 / cv::max(sigma,1.e-12);
 
     char fname[100];
-    string imageName[] = {"../cameraman.tif", "../lena256.png", "../man256.png"};
+    string imageName[] = {"cameraman.tif", "lena256.png", "man256.png"};
 
     cv::Mat cv_original = cv::imread(imageName[k], cv::IMREAD_GRAYSCALE);
     // LOADS ORIGINAL IMAGE TO A MAT
     Mat I(toMat(cv_original));
+
+    cv::imshow("Original", cv_original);
+    cv::moveWindow("Original", 50, 50);
 
     // GENERATES KERNEL FOR BLURRING
     Mat H(kernel(kernelSize, kernelSigma));
@@ -55,6 +58,10 @@ int main(int argc, char const *argv[]) {
     Mat Bn(I.rows, I.cols);
     Bn = B + noiseData;
     mapMat(Bn, 0.0, 1.0);
+
+    cv::imshow("Blurred", toCVMat(Bn));
+    cv::moveWindow("Blurred", I.cols + 100, 50);
+    cv::waitKey(100);
 
 
     Mat rop;
