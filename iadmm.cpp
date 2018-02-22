@@ -50,6 +50,16 @@ Mat iadmm(std::vector<double> &OBJ, std::vector<double> &TV,
   double gamma = beta / mu;
   Denom = Denom1 + gamma * Denom2;
 
+
+  cv::namedWindow("test");
+  cv::moveWindow("test", 50, aux.cols + 100);
+  cv::namedWindow("test2");
+  cv::moveWindow("test2", img.cols + 100, aux.cols + 100);
+  cv::namedWindow("test3");
+  cv::moveWindow("test3", 2*img.cols + 150, aux.cols + 100);
+
+
+
   for(int k=0; k<nIter; ++k) {
     std::cout << "iteracion " << k << " / " << nIter << std::endl;
 
