@@ -2,16 +2,12 @@
 
 This repository contains the code in C++ to test codes to deblur images. In the deblurring process, the blurring operator is supposed to be known
 
-This code includes a C++ wrapper for the library
-
-```
-libfftw3
-```
+This code includes a C++ wrapper for the library [fftw-3](http://www.fftw.org/)
 which this code deppends on.
 
 
 ### Build commands
-The following commands run on Unix machine. Be sure to have the **FFTW-3 library** installed.
+The following commands run on Unix machine. Be sure to have the [**FFTW-3 library**](http://www.fftw.org/) installed.
 
 - To build the code for deblurring a single image:
 ```Makefile
