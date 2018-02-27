@@ -78,7 +78,7 @@ int main(int argc, char const *argv[]) {
     fout.close();
 
     rop = admm05(OBJ, TV, E, S, I, H, Bn, mu, alpha, nIter);
-    sprintf(fname, "testData/admm05-%s.txt", imageName[k].c_str());
+    sprintf(fname, "testData/admm(05)-%s.txt", imageName[k].c_str());
     fout.open(fname);
     for(int i=0; i<nIter; ++i)
       fout << i << " " << OBJ[i] << " " << TV[i]

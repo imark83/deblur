@@ -1,4 +1,4 @@
-## ADMM and IADMM
+## ADMM(1), ADMM(1/2) and IADMM
 
 This repository contains the code in C++ to test codes to deblur images. In the deblurring process, the blurring operator is supposed to be known
 
