@@ -31,7 +31,7 @@ int main(int argc, char const *argv[]) {
     double kernelSigma = 7;
     double sigma = 1.0e-6;
     double alpha=0.1;
-    int nIter = 100;
+    int nIter = 1000;
     double mu = 1e12; //0.05 / cv::max(sigma,1.e-12);
 
     char fname[100];
@@ -70,7 +70,7 @@ int main(int argc, char const *argv[]) {
     std::ofstream fout;
 
     rop = admm1(OBJ, TV, E, S, I, H, Bn, mu, alpha, nIter);
-    sprintf(fname, "testData/admm(1)-%02i.txt", k);
+    sprintf(fname, "testData/admm(1)-%s.txt", imageName[k].c_str());
     fout.open(fname);
     for(int i=0; i<nIter; ++i)
       fout << i << " " << OBJ[i] << " " << TV[i]
@@ -78,7 +78,7 @@ int main(int argc, char const *argv[]) {
     fout.close();
 
     rop = admm05(OBJ, TV, E, S, I, H, Bn, mu, alpha, nIter);
-    sprintf(fname, "testData/admm(1/2)-%02i.txt", k);
+    sprintf(fname, "testData/admm05-%s.txt", imageName[k].c_str());
     fout.open(fname);
     for(int i=0; i<nIter; ++i)
       fout << i << " " << OBJ[i] << " " << TV[i]
@@ -88,7 +88,7 @@ int main(int argc, char const *argv[]) {
 
     rop = iadmm(OBJ, TV, E, S, I, H, Bn, mu, alpha, nIter);
 
-    sprintf(fname, "testData/iadmm-%02i.txt", k);
+    sprintf(fname, "testData/iadmm-%s.txt", imageName[k].c_str());
     fout.open(fname);
     for(int i=0; i<nIter; ++i)
       fout << i << " " << OBJ[i] << " " << TV[i]
