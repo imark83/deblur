@@ -1,3 +1,4 @@
+#include <opencv2/opencv.hpp>
 #include "misc.hpp"
 #include "fft.hpp"
 
@@ -195,6 +196,16 @@ cv::Mat toCVMat(const Mat &op, double scale) {
     rop.data[rop.cols*i+j] =(int) (op(i,j) * scale);
   }
   return rop;
+}
+
+// PLOTTING
+void imshow(const char *winName, const CMat &op) {
+  Mat aux(op.rows, op.cols);
+  for(int i=0; i<aux.rows; ++i) for(int j=0; j<aux.cols; ++j)
+    aux(i,j) = (double) std::real(op(i,j));
+  cv::imshow(winName, toCVMat(aux));
+
+  return;
 }
 
 

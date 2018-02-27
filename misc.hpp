@@ -35,6 +35,8 @@ cv::Mat toCVMat(const Mat &op);
 Mat toMat(const cv::Mat &op, double);
 cv::Mat toCVMat(const Mat &op, double);
 
+// PLOTTING
+void imshow(const char *winName, const CMat &op);
 
 
 // MISC STATISTIC FUNCTIONS

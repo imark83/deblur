@@ -91,9 +91,7 @@ Mat admm05(std::vector<double> &OBJ, std::vector<double> &TV,
 
 
     // PLOT
-    for(int i=0; i<aux.rows; ++i) for(int j=0; j<aux.cols; ++j)
-      aux(i,j) = (double) std::real(U(i,j));
-    cv::imshow("test", toCVMat(aux));
+    imshow("test", U);
     cv::waitKey(10);
 
     for(int i=0; i<aux.rows; ++i) for(int j=0; j<aux.cols; ++j)
