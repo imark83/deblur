@@ -5,7 +5,8 @@
 #include <opencv2/opencv.hpp>
 #include "matrix/cmat.hpp"
 #include "misc.hpp"
-#include "admm.hpp"
+#include "admm1.hpp"
+#include "admm05.hpp"
 #include "iadmm.hpp"
 
 std::ostream &operator<<(std::ostream &output, const CArray &op) {
@@ -68,8 +69,16 @@ int main(int argc, char const *argv[]) {
     std::vector<double> OBJ, E, TV, S;
     std::ofstream fout;
 
-    rop = admm(OBJ, TV, E, S, I, H, Bn, mu, alpha, nIter);
-    sprintf(fname, "testData/admm-%02i.txt", k);
+    rop = admm1(OBJ, TV, E, S, I, H, Bn, mu, alpha, nIter);
+    sprintf(fname, "testData/admm(1)-%02i.txt", k);
+    fout.open(fname);
+    for(int i=0; i<nIter; ++i)
+      fout << i << " " << OBJ[i] << " " << TV[i]
+            << " " << E[i] << " " << S[i] << std::endl;
+    fout.close();
+
+    rop = admm05(OBJ, TV, E, S, I, H, Bn, mu, alpha, nIter);
+    sprintf(fname, "testData/admm(1/2)-%02i.txt", k);
     fout.open(fname);
     for(int i=0; i<nIter; ++i)
       fout << i << " " << OBJ[i] << " " << TV[i]

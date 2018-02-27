@@ -5,17 +5,10 @@
 // obj = TV(u) + 0.5*mu*||H*U - Bn||_2^2.
 // TV = |U_x|+|U_y|
 
-// function [U S]= iadmm(I,H,Bn,mu,opts,alpha)
+// function [U S]= admm1(I,H,Bn,mu,opts,alpha)
 
 
-double getTV(const CMat &Ux, const CMat &Uy) {
-  double rop = 0.0;
-  for(int i=0; i<Ux.rows; ++i) for(int j=0; j<Ux.cols; ++j)
-    rop += std::abs(Ux(i,j)) + std::abs(Uy(i,j));
-  return 0.5*sqrt(rop);
-}
-
-Mat admm(std::vector<double> &OBJ, std::vector<double> &TV,
+Mat admm1(std::vector<double> &OBJ, std::vector<double> &TV,
         std::vector<double> &E, std::vector<double> &S,
         const Mat &img, const Mat &ker, const Mat &blurred,
         double mu, double alpha, int nIter) {
