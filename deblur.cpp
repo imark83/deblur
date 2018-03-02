@@ -58,17 +58,17 @@ int main(int argc, char const *argv[]) {
   cv::RNG rng(12345);
 
   std::cout << std::scientific;
-  std::cout << std::setprecision(10);
+  // std::cout << std::setprecision(5);
 
   if (argc == 1)
     help(argv);
 
   int kernelSize = 17;
   double kernelSigma = 7;
-  double sigma = 1.0e-5;
-  double alpha = 0.1;
-  int nIter = 200;
-  double mu = 1.0e9; //0.05 / cv::max(sigma,1.e-12);
+  double sigma = 1.0e-4;
+  double alpha = 0.01;
+  int nIter = 20000;
+  double mu = 100.0/cv::max(sigma,1.e-12);
   initParameters (kernelSize, kernelSigma, sigma, alpha, nIter, argc, argv);
 
   std::cout << "nIter = " << nIter << std::endl;
@@ -114,28 +114,28 @@ int main(int argc, char const *argv[]) {
 
 
   Mat rop;
-  std::vector<double> OBJ, E, TV, S;
+  std::vector<double> OBJ, E, TV, S, residual;
 
-  rop = admm1(OBJ, TV, E, S, img, k, noised, mu, alpha, nIter);
+  // rop = admm1(OBJ, TV, E, S, residual, img, k, noised, mu, alpha, nIter);
+  //
+  // cv::imshow("Deblurred ADMM(1)", toCVMat(rop));
+  // cv::moveWindow("Deblurred ADMM(1)", 2*img.cols + 150, 50);
+  // cv::waitKey(100);
 
-  cv::imshow("Deblurred ADMM(1)", toCVMat(rop));
-  cv::moveWindow("Deblurred ADMM(1)", 2*img.cols + 150, 50);
-  cv::waitKey(100);
 
 
-
-  rop = admm05(OBJ, TV, E, S, img, k, noised, mu, alpha, nIter);
+  rop = admm05(OBJ, TV, E, S, residual, img, k, noised, mu, alpha, nIter);
 
   cv::imshow("Deblurred ADMM(1/2)", toCVMat(rop));
   cv::moveWindow("Deblurred ADMM(1/2)", 3*img.cols + 200, 50);
   cv::waitKey(100);
 
 
-  rop = iadmm(OBJ, TV, E, S, img, k, noised, mu, alpha, nIter);
-
-  cv::imshow("Deblurred IADMM", toCVMat(rop));
-  cv::moveWindow("Deblurred IADMM", 4*img.cols + 250, 50);
-  cv::waitKey(0);
+  // rop = iadmm(OBJ, TV, E, S, residual, img, k, noised, mu, alpha, nIter);
+  //
+  // cv::imshow("Deblurred IADMM", toCVMat(rop));
+  // cv::moveWindow("Deblurred IADMM", 4*img.cols + 250, 50);
+  // cv::waitKey(0);
 
   // TESTING AREA
 

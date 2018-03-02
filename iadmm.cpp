@@ -6,14 +6,16 @@
 
 Mat iadmm(std::vector<double> &OBJ, std::vector<double> &TV,
         std::vector<double> &E, std::vector<double> &S,
-        const Mat &img, const Mat &ker, const Mat &blurred,
+        std::vector<double> residual, const Mat &img,
+        const Mat &ker, const Mat &blurred,
         double mu, double alpha, int nIter) {
 
   // START WITH THE CODE
   // initialization
-  double beta = 1000.0;
+  double delta = 0.001;
   CMat U(blurred);
-  // int rows = blurred.rows, cols = blurred.cols;
+  CMat U0(U.rows, U.cols);
+  CMat UB(U.rows, U.cols);
   CMat Px(U.rows, U.cols);
   CMat Py(U.rows, U.cols);
   CMat Px0(U.rows, U.cols);
@@ -38,6 +40,7 @@ Mat iadmm(std::vector<double> &OBJ, std::vector<double> &TV,
   E = std::vector<double>(nIter);
   TV = std::vector<double>(nIter);
   OBJ = std::vector<double>(nIter);
+  residual = std::vector<double>(nIter);
 
   // GET CONSTANT MATRICES
   CMat conjoDx, conjoDy, Nomin1, Denom1, Denom2;
@@ -47,7 +50,7 @@ Mat iadmm(std::vector<double> &OBJ, std::vector<double> &TV,
   // INITIALIZE Ux, Uy
   Ux = diffY(U);
   Uy = diffX(U);
-  double gamma = beta / mu;
+  double gamma = delta / mu;
   Denom = Denom1 + gamma * Denom2;
 
 
@@ -66,10 +69,11 @@ Mat iadmm(std::vector<double> &OBJ, std::vector<double> &TV,
     // initial p-problem
     Px0 = Px;
     Py0 = Py;
+    U0  = U;
     // w-subproblem
 
-    Wx = shrinft(Ux - PxB/beta, 1.0/beta);
-    Wy = shrinft(Uy - PyB/beta, 1.0/beta);
+    Wx = shrinft(Ux - PxB/delta, 1.0/delta);
+    Wy = shrinft(Uy - PyB/delta, 1.0/delta);
 
 
     // u-subproblem
@@ -83,21 +87,41 @@ Mat iadmm(std::vector<double> &OBJ, std::vector<double> &TV,
     fftn(auxX); fftn(auxY);
     Nono = (conjoDx^auxX) + (conjoDy^auxY);
 
+
+    // Previous U in U0
+    residual[k] = 0.0;
+
+
     U = (Nomin1 + gamma*Nomin2 + Nono/mu) / Denom;
     ifftn(U);
     U = real(U);
+
+    // mapMat(U, 0.0, 1.0);
+
+
+    double residualDenom = 1+sqrt(norm(UB,2)*norm(UB,2) +
+    norm(PxB,2)*norm(PxB,2) + norm(PyB,2)*norm(PyB,2));
+
+
+    residual[k] += norm(U-UB,2)*norm(U-UB,2);
+
 
     // UPDATE P
     Ux = diffY(U);
     Uy = diffX(U);
 
-    Px = PxB + beta*(Wx-Ux);
-    Py = PyB + beta*(Wy-Uy);
+    Px = PxB + delta*(Wx-Ux);
+    Py = PyB + delta*(Wy-Uy);
 
     PxB = Px + alpha * (Px - Px0);
     PyB = Py + alpha * (Py - Py0);
+    UB  = U  + alpha * (U  - U0);
 
 
+    residual[k] += delta*delta*norm(Wx-Ux,2)*norm(Wx-Ux,2);
+    residual[k] += delta*delta*norm(Wy-Uy,2)*norm(Wy-Uy,2);
+
+    residual[k] = sqrt(residual[k])/residualDenom;
 
     // PLOT
     for(int i=0; i<aux.rows; ++i) for(int j=0; j<aux.cols; ++j)
@@ -131,7 +155,8 @@ Mat iadmm(std::vector<double> &OBJ, std::vector<double> &TV,
         + 0.5*mu*norm2(auxX)*norm2(auxX);
     std::cout << "tv = " << TV[k] << "   ";
     std::cout << "obj = " << OBJ[k] << "  ";
-    std::cout << "err = " << E[k] << std::endl << std::endl;
+    std::cout << "err = " << E[k] << "  ";
+    std::cout << "resid = " << residual[k] << std::endl << std::endl;
 
   }
 

@@ -10,16 +10,22 @@
 
 Mat admm05(std::vector<double> &OBJ, std::vector<double> &TV,
         std::vector<double> &E, std::vector<double> &S,
-        const Mat &img, const Mat &ker, const Mat &blurred,
+        std::vector<double> residual, const Mat &img,
+        const Mat &ker, const Mat &blurred,
         double mu, double alpha, int nIter) {
 
   // START WITH THE CODE
   // initialization
-  double beta = 1000;
+  double delta = 0.001;
   CMat U(blurred);
-  // int rows = blurred.rows, cols = blurred.cols;
+  CMat U0(U.rows, U.cols);
+  CMat UB(U.rows, U.cols);
   CMat Px(U.rows, U.cols);
   CMat Py(U.rows, U.cols);
+  CMat Px0(U.rows, U.cols);
+  CMat Py0(U.rows, U.cols);
+  CMat PxB(U.rows, U.cols);
+  CMat PyB(U.rows, U.cols);
   CMat Ux;
   CMat Uy;
   CMat Denom;
@@ -38,12 +44,13 @@ Mat admm05(std::vector<double> &OBJ, std::vector<double> &TV,
   E = std::vector<double>(nIter);
   TV = std::vector<double>(nIter);
   OBJ = std::vector<double>(nIter);
+  residual = std::vector<double>(nIter);
 
   // GET CONSTANT MATRICES
   CMat conjoDx, conjoDy, Nomin1, Denom1, Denom2;
   getC (conjoDx, conjoDy, Nomin1, Denom1, Denom2, blurred, ker);
 
-  double gamma = beta / mu;
+  double gamma = delta / mu;
   Denom = Denom1 + gamma*Denom2;
   // w-subproblem
   Ux = diffY(U);
@@ -59,9 +66,12 @@ Mat admm05(std::vector<double> &OBJ, std::vector<double> &TV,
 
   for(int k=0; k<nIter; ++k) {
     std::cout << "iteracion " << k << " / " << nIter << std::endl;
+    Px0 = Px;
+    Py0 = Py;
+    U0  = U;
 
-    Wx = shrinft(Ux - Px/beta, 1.0/beta);
-    Wy = shrinft(Uy - Py/beta, 1.0/beta);
+    Wx = shrinft(Ux - Px/delta, 1.0/delta);
+    Wy = shrinft(Uy - Py/delta, 1.0/delta);
 
 
     // u-subproblem
@@ -75,9 +85,18 @@ Mat admm05(std::vector<double> &OBJ, std::vector<double> &TV,
     fftn(auxX); fftn(auxY);
     Nono = (conjoDx^auxX) + (conjoDy^auxY);
 
+
+    residual[k] = 0.0;
+    double residualDenom = 1+sqrt(norm(UB,2)*norm(UB,2) +
+    norm(PxB,2)*norm(PxB,2) + norm(PyB,2)*norm(PyB,2));
+
+
+    residual[k] += norm(U-UB,2)*norm(U-UB,2);
+
     U = (Nomin1 + gamma*Nomin2 + Nono/mu) / Denom;
     ifftn(U);
     U = real(U);
+
 
 
     // UPDATE P
@@ -85,8 +104,19 @@ Mat admm05(std::vector<double> &OBJ, std::vector<double> &TV,
     Uy = diffX(U);
 
 
-    Px = Px + beta*(Wx-Ux);
-    Py = Py + beta*(Wy-Uy);
+    Px = Px + delta*(Wx-Ux);
+    Py = Py + delta*(Wy-Uy);
+
+
+    PxB = Px + alpha * (Px - Px0);
+    PyB = Py + alpha * (Py - Py0);
+    UB  = U  + alpha * (U  - U0);
+
+
+    residual[k] += delta*delta*norm(Wx-Ux,2)*norm(Wx-Ux,2);
+    residual[k] += delta*delta*norm(Wy-Uy,2)*norm(Wy-Uy,2);
+
+    residual[k] = sqrt(residual[k])/residualDenom;
 
 
 
@@ -119,7 +149,8 @@ Mat admm05(std::vector<double> &OBJ, std::vector<double> &TV,
         + 0.5*mu*norm2(auxX)*norm2(auxX);
     std::cout << "tv = " << TV[k] << "   ";
     std::cout << "obj = " << OBJ[k] << "  ";
-    std::cout << "err = " << E[k] << std::endl << std::endl;
+    std::cout << "err = " << E[k] << "  ";
+    std::cout << "resid = " << residual[k] << std::endl << std::endl;
 
   }
 

@@ -10,6 +10,7 @@ void fillNoise(Mat &rop, cv::RNG &rng, double mean, double std);
 
 // CUTS VALUES OF MATRIX TO MINVAL AND MAXMAL
 void mapMat(Mat &rop, double minval, double maxval);
+void mapMat(CMat &rop, double minval, double maxval);
 
 
 // CONVOLUTES MATRIX APPLYING KERNEL USING CIRCULAR MAPPING(TORUS)

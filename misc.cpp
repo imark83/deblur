@@ -20,6 +20,16 @@ void mapMat(Mat &rop, double minval, double maxval) {
   return;
 }
 
+// CUTS REAL VALUES OF MATRIX TO MINVAL AND MAXMAL
+void mapMat(CMat &rop, double minval, double maxval) {
+  for(int i=0; i<rop.rows; ++i) for(int j=0; j<rop.cols; ++j) {
+    rop(i,j) =(std::real(rop(i,j)) < 0.0) ? 0.0 : std::real(rop(i,j));
+    rop(i,j) =(std::real(rop(i,j)) > 1.0) ? 1.0 : std::real(rop(i,j));
+  }
+  return;
+}
+
+
 // GENERATES GAUSSIAN KERNEL
 // size MUST be odd
 Mat kernel(int size, double sigma) {

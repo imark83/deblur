@@ -10,12 +10,13 @@
 
 Mat admm1(std::vector<double> &OBJ, std::vector<double> &TV,
         std::vector<double> &E, std::vector<double> &S,
-        const Mat &img, const Mat &ker, const Mat &blurred,
+        std::vector<double> residual, const Mat &img,
+        const Mat &ker, const Mat &blurred,
         double mu, double alpha, int nIter) {
 
   // START WITH THE CODE
   // initialization
-  double beta = 0.01;
+  double delta = 0.001;
   CMat U(blurred);
   // int rows = blurred.rows, cols = blurred.cols;
   CMat Px(U.rows, U.cols);
@@ -38,12 +39,13 @@ Mat admm1(std::vector<double> &OBJ, std::vector<double> &TV,
   E = std::vector<double>(nIter);
   TV = std::vector<double>(nIter);
   OBJ = std::vector<double>(nIter);
+  residual = std::vector<double>(nIter);
 
   // GET CONSTANT MATRICES
   CMat conjoDx, conjoDy, Nomin1, Denom1, Denom2;
   getC (conjoDx, conjoDy, Nomin1, Denom1, Denom2, blurred, ker);
 
-  double gamma = beta / mu;
+  double gamma = delta / mu;
   Denom = Denom1 + gamma*Denom2;
   // w-subproblem
   Ux = diffY(U);
@@ -63,10 +65,10 @@ Mat admm1(std::vector<double> &OBJ, std::vector<double> &TV,
 
 
     Wx = sign(Ux)^max(
-        abs(Ux-Px/beta)-Complex(1.0/beta),
+        abs(Ux-Px/delta)-Complex(1.0/delta),
         0.0);
     Wy = sign(Uy)^max(
-        abs(Uy-Py/beta)-Complex(1.0/beta),
+        abs(Uy-Py/delta)-Complex(1.0/delta),
         0.0);
 
     // u-subproblem
@@ -80,19 +82,31 @@ Mat admm1(std::vector<double> &OBJ, std::vector<double> &TV,
     fftn(auxX); fftn(auxY);
     Nono = (conjoDx^auxX) + (conjoDy^auxY);
 
+    double residualDenom = 1+sqrt(norm(U,2)*norm(U,2) +
+              norm(Px,2)*norm(Px,2) + norm(Py,2)*norm(Py,2));
+
+    // USE auxX to store Previous U
+    auxX = U;
+    residual[k] = 0.0;
+
     U = (Nomin1 + gamma*Nomin2 + Nono/mu) / Denom;
     ifftn(U);
     U = real(U);
 
+    residual[k] += norm(U-auxX,2)*norm(U-auxX,2);
 
     // UPDATE P
     Ux = diffY(U);
     Uy = diffX(U);
 
 
-    Px = Px + beta*(Wx-Ux);
-    Py = Py + beta*(Wy-Uy);
+    Px = Px + delta*(Wx-Ux);
+    Py = Py + delta*(Wy-Uy);
 
+    residual[k] += delta*delta*norm(Wx-Ux,2)*norm(Wx-Ux,2);
+    residual[k] += delta*delta*norm(Wy-Uy,2)*norm(Wy-Uy,2);
+
+    residual[k] = sqrt(residual[k])/residualDenom;
 
 
     // PLOT
@@ -124,7 +138,8 @@ Mat admm1(std::vector<double> &OBJ, std::vector<double> &TV,
         + 0.5*mu*norm2(auxX)*norm2(auxX);
     std::cout << "tv = " << TV[k] << "   ";
     std::cout << "obj = " << OBJ[k] << "  ";
-    std::cout << "err = " << E[k] << std::endl << std::endl;
+    std::cout << "err = " << E[k] << "  ";
+    std::cout << "resid = " << residual[k] << std::endl << std::endl;
 
   }
 
