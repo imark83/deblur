@@ -2,7 +2,7 @@
 #ifndef __IADMM_H__
 #define __IADMM_H__
 
-#include "matrix/cmat.hpp"
+#include "lazyMat/cmat.hpp"
 typedef std::vector<std::complex<double> > CArray;
 
 Mat iadmm(std::vector<double> &OBJ, std::vector<double> &TV,

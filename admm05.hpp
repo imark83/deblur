@@ -2,7 +2,7 @@
 #ifndef __ADMM05_H__
 #define __ADMM05_H__
 
-#include "matrix/cmat.hpp"
+#include "lazyMat/cmat.hpp"
 typedef std::vector<std::complex<double> > CArray;
 
 Mat admm05(std::vector<double> &OBJ, std::vector<double> &TV,

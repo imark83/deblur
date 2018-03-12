@@ -5,7 +5,7 @@
 #include <vector>
 #include <fftw3.h>
 
-#include "matrix/cmat.hpp"
+#include "lazyMat/cmat.hpp"
 typedef std::vector<std::complex<double> > CArray;
 
 

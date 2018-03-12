@@ -1,4 +1,4 @@
-#include "matrix/cmat.hpp"
+#include "lazyMat/cmat.hpp"
 #include "misc.hpp"
 #include "fft.hpp"
 

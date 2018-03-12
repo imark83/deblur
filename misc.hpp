@@ -2,7 +2,7 @@
 #define __MISC_HPP__
 
 #include <opencv2/opencv.hpp>
-#include "matrix/cmat.hpp"
+#include "lazyMat/cmat.hpp"
 
 
 // FILLS WITH GAUSSIAN NOISE
@@ -76,7 +76,7 @@ T var(const Mat_<T> &op) {
 // FUNCTION SNR
 template <class T>
 T snr(Mat_<T> &ref, Mat_<T> &sig) {
-  T mse = (mean(pow2(ref-sig)));
+  T mse = (mean((ref-sig)^(ref-sig)));
   T dv = var(ref);
   return 10.0 * log10(dv/mse);
 }

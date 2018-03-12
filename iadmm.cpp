@@ -1,4 +1,4 @@
-#include "matrix/cmat.hpp"
+#include "lazyMat/cmat.hpp"
 #include "misc.hpp"
 #include "fft.hpp"
 
@@ -12,7 +12,7 @@ Mat iadmm(std::vector<double> &OBJ, std::vector<double> &TV,
 
   // START WITH THE CODE
   // initialization
-  double delta = 0.001;
+  double delta = 1000.0;
   CMat U(blurred);
   CMat U0(U.rows, U.cols);
   CMat UB(U.rows, U.cols);
@@ -144,24 +144,24 @@ Mat iadmm(std::vector<double> &OBJ, std::vector<double> &TV,
     // COMPUTE METADATA
     S[k] = std::real(snr(CImg, U));
     E[k] = norm(CImg - U);
-    TV[k] = norm(Ux, 1) + norm(Uy, 1);
-
-    for(int i=0; i<aux.rows; ++i) for(int j=0; j<aux.cols; ++j)
-      aux(i,j) = std::real(U(i,j));
-    convolute(aux, aux, ker);
-    auxX = CMat(aux) - blurred;
-
-    OBJ[k] = TV[k]
-        + 0.5*mu*norm2(auxX)*norm2(auxX);
-    std::cout << "tv = " << TV[k] << "   ";
-    std::cout << "obj = " << OBJ[k] << "  ";
-    std::cout << "err = " << E[k] << "  ";
-    std::cout << "resid = " << residual[k] << std::endl << std::endl;
+    // TV[k] = norm(Ux, 1) + norm(Uy, 1);
+    //
+    // for(int i=0; i<aux.rows; ++i) for(int j=0; j<aux.cols; ++j)
+    //   aux(i,j) = std::real(U(i,j));
+    // convolute(aux, aux, ker);
+    // auxX = CMat(aux) - blurred;
+    //
+    // OBJ[k] = TV[k]
+    //     + 0.5*mu*norm2(auxX)*norm2(auxX);
+    // std::cout << "tv = " << TV[k] << "   ";
+    // std::cout << "obj = " << OBJ[k] << "  ";
+    // std::cout << "err = " << E[k] << "  ";
+    // std::cout << "resid = " << residual[k] << std::endl << std::endl;
 
   }
 
   Mat rop(U.rows, U.cols);
-  for(int i=0; i<rop.rows; ++i) for(int j=0; j<rop.cols; ++j)
+  for(size_t i=0; i<rop.rows; ++i) for(size_t j=0; j<rop.cols; ++j)
     rop(i,j) = (double) std::real(U(i,j));
 
   return rop;
