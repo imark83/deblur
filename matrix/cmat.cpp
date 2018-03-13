@@ -85,7 +85,7 @@ CMat sign(const CMat &op) {
 CMat max(const CMat &op1, double op2) {
   CMat rop(op1.rows, op1.cols);
   for(int i=0; i<rop.rows; ++i) for(int j=0; j<rop.cols; ++j)
-    if((std::real(rop(i,j))) > op2)
+    if((std::real(op1(i,j))) > op2)
       rop(i,j) = op1(i,j);
     else
       rop(i,j) = op2;

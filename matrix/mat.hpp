@@ -38,13 +38,6 @@ public:
   ~Mat_() {delete [] data;}
 
 
-  // MEMBER ACCESS
-  const T & operator()(int i, int j) const {
-    return data[cols*i+j];
-  }
-  T & operator()(int i, int j) {
-    return data[cols*i+j];
-  }
 
   // ASSIGNMENT
   Mat_ & operator=(const Mat_ &op) {
