@@ -10,18 +10,20 @@ Mat iadmm(std::vector<double> &OBJ, std::vector<double> &TV,
         const Mat &ker, const Mat &blurred,
         double mu, double alpha, int nIter) {
 
+
+
   // START WITH THE CODE
   // initialization
   double delta = 1000.0;
   CMat U(blurred);
-  CMat U0(U.rows, U.cols);
-  CMat UB(U.rows, U.cols);
-  CMat Px(U.rows, U.cols);
-  CMat Py(U.rows, U.cols);
-  CMat Px0(U.rows, U.cols);
-  CMat Py0(U.rows, U.cols);
-  CMat PxB(U.rows, U.cols);
-  CMat PyB(U.rows, U.cols);
+  CMat U0(U.rows, U.cols, 0.0);
+  CMat UB(U.rows, U.cols, 0.0);
+  CMat Px(U.rows, U.cols, 0.0);
+  CMat Py(U.rows, U.cols, 0.0);
+  CMat Px0(U.rows, U.cols, 0.0);
+  CMat Py0(U.rows, U.cols, 0.0);
+  CMat PxB(U.rows, U.cols, 0.0);
+  CMat PyB(U.rows, U.cols, 0.0);
   CMat Ux;
   CMat Uy;
   CMat Denom;
@@ -35,7 +37,6 @@ Mat iadmm(std::vector<double> &OBJ, std::vector<double> &TV,
   Mat aux(U.rows, U.cols);
 
 
-
   S = std::vector<double>(nIter);
   E = std::vector<double>(nIter);
   TV = std::vector<double>(nIter);
@@ -47,12 +48,18 @@ Mat iadmm(std::vector<double> &OBJ, std::vector<double> &TV,
   getC (conjoDx, conjoDy, Nomin1, Denom1, Denom2, blurred, ker);
 
 
+
   // INITIALIZE Ux, Uy
   Ux = diffY(U);
   Uy = diffX(U);
+
+
+
   double gamma = delta / mu;
   Denom = Denom1 + gamma * Denom2;
 
+  // std::cout << "Denom = " << norm2(Denom) << '\n';
+  // exit(1);
 
   cv::namedWindow("test");
   cv::moveWindow("test", 50, aux.cols + 100);
@@ -72,6 +79,7 @@ Mat iadmm(std::vector<double> &OBJ, std::vector<double> &TV,
     U0  = U;
     // w-subproblem
 
+
     Wx = shrinft(Ux - PxB/delta, 1.0/delta);
     Wy = shrinft(Uy - PyB/delta, 1.0/delta);
 
@@ -88,11 +96,13 @@ Mat iadmm(std::vector<double> &OBJ, std::vector<double> &TV,
     Nono = (conjoDx^auxX) + (conjoDy^auxY);
 
 
+
     // Previous U in U0
     residual[k] = 0.0;
 
 
     U = (Nomin1 + gamma*Nomin2 + Nono/mu) / Denom;
+
     ifftn(U);
     U = real(U);
 
@@ -144,19 +154,19 @@ Mat iadmm(std::vector<double> &OBJ, std::vector<double> &TV,
     // COMPUTE METADATA
     S[k] = std::real(snr(CImg, U));
     E[k] = norm(CImg - U);
-    // TV[k] = norm(Ux, 1) + norm(Uy, 1);
-    //
-    // for(int i=0; i<aux.rows; ++i) for(int j=0; j<aux.cols; ++j)
-    //   aux(i,j) = std::real(U(i,j));
-    // convolute(aux, aux, ker);
-    // auxX = CMat(aux) - blurred;
-    //
-    // OBJ[k] = TV[k]
-    //     + 0.5*mu*norm2(auxX)*norm2(auxX);
-    // std::cout << "tv = " << TV[k] << "   ";
-    // std::cout << "obj = " << OBJ[k] << "  ";
-    // std::cout << "err = " << E[k] << "  ";
-    // std::cout << "resid = " << residual[k] << std::endl << std::endl;
+    TV[k] = norm(Ux, 1) + norm(Uy, 1);
+
+    for(int i=0; i<aux.rows; ++i) for(int j=0; j<aux.cols; ++j)
+      aux(i,j) = std::real(U(i,j));
+    convolute(aux, aux, ker);
+    auxX = aux - blurred;
+
+    OBJ[k] = TV[k]
+        + 0.5*mu*norm2(auxX)*norm2(auxX);
+    std::cout << "tv = " << TV[k] << "   ";
+    std::cout << "obj = " << OBJ[k] << "  ";
+    std::cout << "err = " << E[k] << "  ";
+    std::cout << "resid = " << residual[k] << std::endl << std::endl;
 
   }
 

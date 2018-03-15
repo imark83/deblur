@@ -86,7 +86,7 @@ void convolute(Mat &rop, const Mat &op, const Mat &kernel) {
 }
 
 
-void psf2otf (CMat &rop, const CMat &op1, int outsize[2]) {
+void psf2otf (CMat &rop, const CMat &op1, size_t outsize[2]) {
   // EXTEND op1 to OUTSIZE size
   int insize[2];
   insize[0] = op1.rows;
@@ -129,7 +129,7 @@ void psf2otf (CMat &rop, const CMat &op1, int outsize[2]) {
 void getC(CMat &conjoDx, CMat &conjoDy, CMat &Nomin1, CMat &Denom1,
       CMat &Denom2, const Mat &Bn, const Mat &H) {
 
-  int sizeB[2] = {Bn.rows, Bn.cols};
+  size_t sizeB[2] = {Bn.rows, Bn.cols};
 
   CMat aux(1,2); aux(0,0) = 1; aux(0,1) = -1;
   CMat otfDx;
@@ -158,9 +158,16 @@ void getC(CMat &conjoDx, CMat &conjoDy, CMat &Nomin1, CMat &Denom1,
 
 // SHRINFT FUNCTION
 const double PI = 3.141592653589793;
-CMat shrinft(const CMat &x, double nameta) {
+CMat shrinft(const VirtualMat_<Complex> &x, double nameta) {
+  x.eval();
+
+  // std::cout << "x[0] = " << x.data[0] << '\n';
+
   CMat rop(x.rows, x.cols);
   double aux = 3.77976314968462*pow(nameta, 2.0/3.0)/4.0;
+
+  // std::cout << "nameta = " << nameta << '\n';
+
 
   for(int i=0; i<x.rows; ++i)
     for(int j=0; j<x.cols; ++j)
@@ -170,6 +177,9 @@ CMat shrinft(const CMat &x, double nameta) {
         rop(i,j) = (2.0/3.0)*x(i,j)*
             (1+cos(2.0*PI/3.0-2.0/3.0*
             acos(nameta/8.0*pow((abs(x(i,j))/3.0),-1.5))));
+
+
+  // std::cout << "rop[0] = " << rop.data[0] << '\n';
   return rop;
 }
 

@@ -65,10 +65,10 @@ int main(int argc, char const *argv[]) {
 
   int kernelSize = 17;
   double kernelSigma = 7;
-  double sigma = 1.0e-3;
+  double sigma = 1.0e-4;
   double alpha = 0.01;
   int nIter = 20000;
-  double mu = 1e12;
+  double mu = 100.0/cv::max(sigma,1.e-12);
   initParameters (kernelSize, kernelSigma, sigma, alpha, nIter, argc, argv);
 
   std::cout << "nIter = " << nIter << std::endl;
@@ -103,32 +103,10 @@ int main(int argc, char const *argv[]) {
 
   // GENERATE NOISED MATRIX
   Mat noised(blurred);
-
-  std::cout << "noise = \n" << noiseData << std::endl;
-
 #ifndef DONT_BLUR_ME
   noised = blurred + noiseData;
   mapMat(noised, 0.0, 1.0);
 #endif
-
-  Mat caca(noised);
-  caca = 255.0*(noised);
-  for(int i=0; i<caca.rows; ++i) for(int j=0; j<caca.cols; ++j)
-    caca(i,j) = round(caca(i,j));
-
-
-  std::cout << "caca = \n" << caca << '\n';
-
-
-  Mat e(img.rows,img.cols);
-  e = (1.0/255.0)*caca - blurred;
-  double n=0;
-  for(int i=0; i<caca.rows; ++i) for(int j=0; j<caca.cols; ++j)
-    if(e(i,j) > n) n = e(i,j);
-
-  std::cout << "diff = " << n << std::endl;
-
-  blurred = (1.0/255.0)*caca;
 
   cv::imshow("Blurred", toCVMat(noised));
   cv::moveWindow("Blurred", img.cols + 100, 50);
@@ -145,7 +123,7 @@ int main(int argc, char const *argv[]) {
   // cv::waitKey(100);
 
 
-
+  //
   // rop = admm05(OBJ, TV, E, S, residual, img, k, noised, mu, alpha, nIter);
   //
   // cv::imshow("Deblurred ADMM(1/2)", toCVMat(rop));

@@ -1,8 +1,10 @@
 CC = g++
-COMMON_OBJECTS = fft.o misc.o iadmm.o admm1.o admm05.o lazyMat/cmat.o
+COMMON_OBJECTS = fft.o misc.o iadmm.o lazyMat/cmat.o
+# COMMON_OBJECTS = fft.o misc.o iadmm.o admm1.o admm05.o lazyMat/cmat.o
 ALL_OBJECTS = $(COMMON_OBJECTS) test.o deblur.o
 LIBS = -lopencv_core -lopencv_highgui -lopencv_imgproc -lopencv_imgcodecs -lfftw3
-CFLAGS = -O3 -std=c++11 -Wall
+# CFLAGS = -O3 -std=c++11 -g
+CFLAGS = -O3 -std=c++11 
 
 test: $(COMMON_OBJECTS) test.o
 	$(CC) -o test $(COMMON_OBJECTS) test.o $(LIBS)

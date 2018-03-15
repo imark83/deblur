@@ -24,7 +24,7 @@ void getC(CMat &conjoDx, CMat &conjoDy, CMat &Nomin1, CMat &Denom1,
       CMat &Denom2, const Mat &Bn, const Mat &H);
 
 // SHRINFT FUNCTION
-CMat shrinft(const CMat &x, double nameta);
+CMat shrinft(const VirtualMat_<Complex> &x, double nameta);
 
 // GENERATES GAUSSIAN KERNEL
 // size MUST be odd
@@ -50,7 +50,8 @@ T mean(T *op, int n) {
 }
 
 template <class T>
-T mean(const Mat_<T> &op) {
+T mean(const VirtualMat_<T> &op) {
+  op.eval();
   return mean<T>(op.data, op.rows*op.cols);
 }
 
