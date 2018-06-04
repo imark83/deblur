@@ -21,7 +21,7 @@ std::ostream &operator<<(std::ostream &output, const std::vector<double> &op) {
 }
 
 int main(int argc, char const *argv[]) {
-  int nImages = 3;
+  int nImages = 6;
   for(int k=0; k<nImages; ++k) {
     // RANDOM NUMBER GENERATOR FROM OPENCV LIB
     cv::RNG rng(1);
@@ -29,15 +29,21 @@ int main(int argc, char const *argv[]) {
     // PARAMETERS
     int kernelSize = 17;
     double kernelSigma = 7;
-    double sigma = 1.0e-6;
-    double alpha=0.1;
-    int nIter = 1000;
-    double mu = 1e12; //0.05 / cv::max(sigma,1.e-12);
+    double sigma = 1.0e-5;
+    double alpha=0.5;
+    int nIter = 500;
+    double mu = 1e9; //0.05 / cv::max(sigma,1.e-12);
 
     char fname[100];
-    string imageName[] = {"cameraman.tif", "lena256.png", "man256.png"};
+    string imageName[] = {
+      "cameraman256.png",
+      "4.2.03-512.png",
+      "5.3.01-1024.png",
+      "lena256.png",
+      "5.2.08-512.png",
+      "5.3.02-1024.png"};
 
-    cv::Mat cv_original = cv::imread(imageName[k], cv::IMREAD_GRAYSCALE);
+    cv::Mat cv_original = cv::imread("testImages/"+imageName[k], cv::IMREAD_GRAYSCALE);
     // LOADS ORIGINAL IMAGE TO A MAT
     Mat I(toMat(cv_original));
 
@@ -66,18 +72,20 @@ int main(int argc, char const *argv[]) {
 
 
     Mat rop;
-    std::vector<double> OBJ, E, TV, S;
+    std::vector<double> OBJ, E, TV, S, residual;
     std::ofstream fout;
 
-    rop = admm1(OBJ, TV, E, S, I, H, Bn, mu, alpha, nIter);
+    rop = admm1(OBJ, TV, E, S, residual, I, H, Bn, mu, alpha, nIter);
     sprintf(fname, "testData/admm(1)-%s.txt", imageName[k].c_str());
+    std::cout << "fname = " << fname << std::endl;
     fout.open(fname);
     for(int i=0; i<nIter; ++i)
       fout << i << " " << OBJ[i] << " " << TV[i]
             << " " << E[i] << " " << S[i] << std::endl;
     fout.close();
 
-    rop = admm05(OBJ, TV, E, S, I, H, Bn, mu, alpha, nIter);
+
+    rop = admm05(OBJ, TV, E, S, residual, I, H, Bn, mu, alpha, nIter);
     sprintf(fname, "testData/admm(05)-%s.txt", imageName[k].c_str());
     fout.open(fname);
     for(int i=0; i<nIter; ++i)
@@ -86,7 +94,7 @@ int main(int argc, char const *argv[]) {
     fout.close();
 
 
-    rop = iadmm(OBJ, TV, E, S, I, H, Bn, mu, alpha, nIter);
+    rop = iadmm(OBJ, TV, E, S, residual, I, H, Bn, mu, alpha, nIter);
 
     sprintf(fname, "testData/iadmm-%s.txt", imageName[k].c_str());
     fout.open(fname);

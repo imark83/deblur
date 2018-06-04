@@ -88,8 +88,7 @@ Mat iadmm(std::vector<double> &OBJ, std::vector<double> &TV,
     Nono = (conjoDx^auxX) + (conjoDy^auxY);
 
 
-    // Previous U in U0
-    residual[k] = 0.0;
+
 
 
     U = (Nomin1 + gamma*Nomin2 + Nono/mu) / Denom;
@@ -99,9 +98,12 @@ Mat iadmm(std::vector<double> &OBJ, std::vector<double> &TV,
     // mapMat(U, 0.0, 1.0);
 
 
+
+    // UP TO HERE, U HAS BEEN UPDATED// Previous U in U0
+    residual[k] = 0.0;
+
     double residualDenom = 1+sqrt(norm(UB,2)*norm(UB,2) +
     norm(PxB,2)*norm(PxB,2) + norm(PyB,2)*norm(PyB,2));
-
 
     residual[k] += norm(U-UB,2)*norm(U-UB,2);
 
@@ -113,15 +115,13 @@ Mat iadmm(std::vector<double> &OBJ, std::vector<double> &TV,
     Px = PxB + delta*(Wx-Ux);
     Py = PyB + delta*(Wy-Uy);
 
-    PxB = Px + alpha * (Px - Px0);
-    PyB = Py + alpha * (Py - Py0);
-    UB  = U  + alpha * (U  - U0);
 
 
     residual[k] += delta*delta*norm(Wx-Ux,2)*norm(Wx-Ux,2);
     residual[k] += delta*delta*norm(Wy-Uy,2)*norm(Wy-Uy,2);
 
     residual[k] = sqrt(residual[k])/residualDenom;
+
 
     // PLOT
     for(int i=0; i<aux.rows; ++i) for(int j=0; j<aux.cols; ++j)
@@ -157,6 +157,15 @@ Mat iadmm(std::vector<double> &OBJ, std::vector<double> &TV,
     std::cout << "obj = " << OBJ[k] << "  ";
     std::cout << "err = " << E[k] << "  ";
     std::cout << "resid = " << residual[k] << std::endl << std::endl;
+
+
+
+
+
+    // PREPARE PB, UB FOR NEXT STEP
+    PxB = Px + alpha * (Px - Px0);
+    PyB = Py + alpha * (Py - Py0);
+    UB  = U  + alpha * (U  - U0);
 
   }
 
