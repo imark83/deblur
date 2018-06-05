@@ -84,7 +84,7 @@ int main(int argc, char const *argv[]) {
     fout << "# OBJ  TV  ERROR  SNR  RESIDUAL" << std::endl;
     for(int i=0; i<nIter; ++i)
       fout << i << " " << OBJ[i] << " " << TV[i]
-            << " " << E[i] << " " << S[i] << residual[i] << std::endl;
+            << " " << E[i] << " " << S[i] << " " << residual[i] << std::endl;
     fout.close();
 
 
@@ -94,7 +94,7 @@ int main(int argc, char const *argv[]) {
     fout << "# OBJ  TV  ERROR  SNR  RESIDUAL" << std::endl;
     for(int i=0; i<nIter; ++i)
       fout << i << " " << OBJ[i] << " " << TV[i]
-            << " " << E[i] << " " << S[i] << residual[i] << std::endl;
+            << " " << E[i] << " " << S[i] << " " << residual[i] << std::endl;
     fout.close();
 
 
@@ -105,7 +105,7 @@ int main(int argc, char const *argv[]) {
     fout << "# OBJ  TV  ERROR  SNR  RESIDUAL" << std::endl;
     for(int i=0; i<nIter; ++i)
       fout << i << " " << OBJ[i] << " " << TV[i]
-            << " " << E[i] << " " << S[i] << residual[i] << std::endl;
+            << " " << E[i] << " " << S[i] << " " << residual[i] << std::endl;
     fout.close();
 
   }
