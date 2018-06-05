@@ -31,7 +31,7 @@ int main(int argc, char const *argv[]) {
     double kernelSigma = 7;
     double sigma = 1.0e-5;
     double alpha=0.5;
-    int nIter = 500;
+    int nIter = 5;
     double mu = 1e9; //0.05 / cv::max(sigma,1.e-12);
 
     char fname[100];
@@ -39,6 +39,8 @@ int main(int argc, char const *argv[]) {
       "cameraman256.png",
       "4.2.03-512.png",
       "5.3.01-1024.png",
+      "brain-512.png",
+      "heart-512.png",
       "lena256.png",
       "5.2.08-512.png",
       "5.3.02-1024.png"};
@@ -79,18 +81,20 @@ int main(int argc, char const *argv[]) {
     sprintf(fname, "testData/admm(1)-%s.txt", imageName[k].c_str());
     std::cout << "fname = " << fname << std::endl;
     fout.open(fname);
+    fout << "# OBJ  TV  ERROR  SNR  RESIDUAL" << std::endl;
     for(int i=0; i<nIter; ++i)
       fout << i << " " << OBJ[i] << " " << TV[i]
-            << " " << E[i] << " " << S[i] << std::endl;
+            << " " << E[i] << " " << S[i] << residual[i] << std::endl;
     fout.close();
 
 
     rop = admm05(OBJ, TV, E, S, residual, I, H, Bn, mu, alpha, nIter);
     sprintf(fname, "testData/admm(05)-%s.txt", imageName[k].c_str());
     fout.open(fname);
+    fout << "# OBJ  TV  ERROR  SNR  RESIDUAL" << std::endl;
     for(int i=0; i<nIter; ++i)
       fout << i << " " << OBJ[i] << " " << TV[i]
-            << " " << E[i] << " " << S[i] << std::endl;
+            << " " << E[i] << " " << S[i] << residual[i] << std::endl;
     fout.close();
 
 
@@ -98,9 +102,10 @@ int main(int argc, char const *argv[]) {
 
     sprintf(fname, "testData/iadmm-%s.txt", imageName[k].c_str());
     fout.open(fname);
+    fout << "# OBJ  TV  ERROR  SNR  RESIDUAL" << std::endl;
     for(int i=0; i<nIter; ++i)
       fout << i << " " << OBJ[i] << " " << TV[i]
-            << " " << E[i] << " " << S[i] << std::endl;
+            << " " << E[i] << " " << S[i] << residual[i] << std::endl;
     fout.close();
 
   }
