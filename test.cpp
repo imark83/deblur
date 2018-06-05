@@ -31,7 +31,7 @@ int main(int argc, char const *argv[]) {
     double kernelSigma = 7;
     double sigma = 1.0e-5;
     double alpha=0.5;
-    int nIter = 5;
+    int nIter = 500;
     double mu = 1e9; //0.05 / cv::max(sigma,1.e-12);
 
     char fname[100];
