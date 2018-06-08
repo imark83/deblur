@@ -21,7 +21,7 @@ std::ostream &operator<<(std::ostream &output, const std::vector<double> &op) {
 }
 
 int main(int argc, char const *argv[]) {
-  int nImages = 6;
+  int nImages = 2;
   for(int k=0; k<nImages; ++k) {
     // RANDOM NUMBER GENERATOR FROM OPENCV LIB
     cv::RNG rng(1);
