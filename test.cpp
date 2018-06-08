@@ -36,12 +36,12 @@ int main(int argc, char const *argv[]) {
 
     char fname[100];
     string imageName[] = {
-      "cameraman256.png",
-      "4.2.03-512.png",
-      "5.3.01-1024.png",
-      "brain-512.png",
-      "heart-512.png",
-      "lena256.png",
+      // "cameraman256.png",
+      // "4.2.03-512.png",
+      // "5.3.01-1024.png",
+      // "brain-512.png",
+      // "heart-512.png",
+      // "lena256.png",
       "5.2.08-512.png",
       "5.3.02-1024.png"};
 
