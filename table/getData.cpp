@@ -95,9 +95,9 @@ int main(int argc, char const *argv[]) {
     // cout << admm05 << endl << admm1 << endl << iadmm << endl;
     if(k%2)
       cout << "\\rowcolor[gray]{0.9}" << endl;
-    cout << code[k] << " & " << iadmm << " & " << admm05 << " & "
-        << fixed << ((float) admm05.k)/iadmm.k << " & "<< admm1 << " & "
-        << fixed << ((float) admm1.k)/iadmm.k << " \\\\" << endl;
+    cout << code[k] << " & " << iadmm << " & " << admm1 << " & "
+        << fixed << ((float) admm1.k)/iadmm.k << " & "<< admm05 << " & "
+        << fixed << ((float) admm05.k)/iadmm.k << " \\\\" << endl;
   }
 
   return 0;

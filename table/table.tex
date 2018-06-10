@@ -8,17 +8,43 @@
 \pagestyle{empty}
 
 \begin{document}
-\small
-\tt
-\begin{tabular}{|r|rrrr|rrrrr|rrrrr|}
-  \cline{2-15}
-  \multicolumn{1}{c|}{} & \multicolumn{4}{c|}{ADMM(1/2)}
-      & \multicolumn{5}{c|}{ADMM(1)} & \multicolumn{5}{c|}{IADMM}\\
-  \hline
-  \rowcolor[gray]{0.9}
-  IMG & I1 & ERROR & SNR & RES & I2 & ERROR & SNR & RES & I1/I2 & I3 & ERROR & SNR & RES & I1/I3 \\
-  \input{data.tex}
-  \hline
-\end{tabular}
+  \small
+  \begin{center}{\tt deblurring results for eps = 0.005}\end{center}
+  {\tt \noindent\begin{tabular}{|r|rrrr|rrrrr|rrrrr|}
+    \cline{2-15}
+    \multicolumn{1}{c|}{} & \multicolumn{4}{c|}{IADMM}
+        & \multicolumn{5}{c|}{ADMM(1/2)} & \multicolumn{5}{c|}{ADMM(1)}\\
+    \hline
+    \rowcolor[gray]{0.9}
+    IMG & I1 & ERROR & SNR & RES & I2 & ERROR & SNR & RES & I1/I2 & I3 & ERROR & SNR & RES & I1/I3 \\
+    \input{data005.tex}
+    \hline
+  \end{tabular}}
+
+  \bigskip
+  \begin{center}{\tt deblurring results for eps = 0.001}\end{center}
+  {\tt \noindent\begin{tabular}{|r|rrrr|rrrrr|rrrrr|}
+    \cline{2-15}
+    \multicolumn{1}{c|}{} & \multicolumn{4}{c|}{IADMM}
+        & \multicolumn{5}{c|}{ADMM(1/2)} & \multicolumn{5}{c|}{ADMM(1)}\\
+    \hline
+    \rowcolor[gray]{0.9}
+    IMG & I1 & ERROR & SNR & RES & I2 & ERROR & SNR & RES & I1/I2 & I3 & ERROR & SNR & RES & I1/I3 \\
+    \input{data001.tex}
+    \hline
+  \end{tabular}}
+
+  \bigskip
+  \begin{center}{\tt deblurring results for eps = 0.0005}\end{center}
+  {\tt \noindent\begin{tabular}{|r|rrrr|rrrrr|rrrrr|}
+    \cline{2-15}
+    \multicolumn{1}{c|}{} & \multicolumn{4}{c|}{IADMM}
+        & \multicolumn{5}{c|}{ADMM(1/2)} & \multicolumn{5}{c|}{ADMM(1)}\\
+    \hline
+    \rowcolor[gray]{0.9}
+    IMG & I1 & ERROR & SNR & RES & I2 & ERROR & SNR & RES & I1/I2 & I3 & ERROR & SNR & RES & I1/I3 \\
+    \input{data0005.tex}
+    \hline
+  \end{tabular}}
 
 \end{document}
