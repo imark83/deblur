@@ -116,11 +116,11 @@ int main(int argc, char const *argv[]) {
   Mat rop;
   std::vector<double> OBJ, E, TV, S, residual;
 
-  // rop = admm1(OBJ, TV, E, S, residual, img, k, noised, mu, alpha, nIter);
-  //
-  // cv::imshow("Deblurred ADMM(1)", toCVMat(rop));
-  // cv::moveWindow("Deblurred ADMM(1)", 2*img.cols + 150, 50);
-  // cv::waitKey(100);
+  rop = admm1(OBJ, TV, E, S, residual, img, k, noised, mu, alpha, nIter);
+
+  cv::imshow("Deblurred ADMM(1)", toCVMat(rop));
+  cv::moveWindow("Deblurred ADMM(1)", 2*img.cols + 150, 50);
+  cv::waitKey(100);
 
 
 
@@ -131,11 +131,11 @@ int main(int argc, char const *argv[]) {
   cv::waitKey(100);
 
 
-  // rop = iadmm(OBJ, TV, E, S, residual, img, k, noised, mu, alpha, nIter);
-  //
-  // cv::imshow("Deblurred IADMM", toCVMat(rop));
-  // cv::moveWindow("Deblurred IADMM", 4*img.cols + 250, 50);
-  // cv::waitKey(0);
+  rop = iadmm(OBJ, TV, E, S, residual, img, k, noised, mu, alpha, nIter);
+
+  cv::imshow("Deblurred IADMM", toCVMat(rop));
+  cv::moveWindow("Deblurred IADMM", 4*img.cols + 250, 50);
+  cv::waitKey(0);
 
   // TESTING AREA
 
