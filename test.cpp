@@ -21,7 +21,7 @@ std::ostream &operator<<(std::ostream &output, const std::vector<double> &op) {
 }
 
 int main(int argc, char const *argv[]) {
-  int nImages = 2;
+  int nImages = 8;
   for(int k=0; k<nImages; ++k) {
     // RANDOM NUMBER GENERATOR FROM OPENCV LIB
     cv::RNG rng(1);
@@ -36,12 +36,12 @@ int main(int argc, char const *argv[]) {
 
     char fname[100];
     string imageName[] = {
-      // "cameraman256.png",
-      // "4.2.03-512.png",
-      // "5.3.01-1024.png",
-      // "brain-512.png",
-      // "heart-512.png",
-      // "lena256.png",
+      "cameraman256.png",
+      "4.2.03-512.png",
+      "5.3.01-1024.png",
+      "brain-512.png",
+      "heart-512.png",
+      "lena256.png",
       "5.2.08-512.png",
       "5.3.02-1024.png"};
 
