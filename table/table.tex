@@ -1,0 +1,24 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage[english]{babel}
+\usepackage{colortbl}
+\usepackage{xcolor}
+\usepackage[margin=1cm]{geometry}
+
+\pagestyle{empty}
+
+\begin{document}
+\small
+\tt
+\begin{tabular}{|r|rrrr|rrrrr|rrrrr|}
+  \cline{2-15}
+  \multicolumn{1}{c|}{} & \multicolumn{4}{c|}{ADMM(1/2)}
+      & \multicolumn{5}{c|}{ADMM(1)} & \multicolumn{5}{c|}{IADMM}\\
+  \hline
+  \rowcolor[gray]{0.9}
+  IMG & I1 & ERROR & SNR & RES & I2 & ERROR & SNR & RES & I1/I2 & I3 & ERROR & SNR & RES & I1/I3 \\
+  \input{data.tex}
+  \hline
+\end{tabular}
+
+\end{document}

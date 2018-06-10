@@ -20,10 +20,9 @@ public:
 
 
 ostream & operator<<(ostream &output, const Line &op) {
-  output << setw(4) << op.k << " ";
-  output << setw(8) << fixed << setprecision(1)
-      << op.obj << " " << setw(8) << op.tv << " " << setw(8) << op.error << " ";
-  output << setw(4) << op.snr << " ";
+  output << setw(4) << op.k << " & ";
+  output << setw(8) << fixed << setprecision(1) << op.error << " & ";
+  output << setw(4) << op.snr << " & ";
   output << scientific << setw(8) << setprecision(2) << op.residual;
   return output;
 }
@@ -47,6 +46,16 @@ int main(int argc, char const *argv[]) {
     "heart-512.png",
     "5.3.01-1024.png",
     "5.3.02-1024.png"
+    // "5.2.08-512.png",
+    // "4.2.03-512.png",
+  };
+  string code[nPic] = {
+    "L0",
+    "L1",
+    "M0",
+    "M1",
+    "H0",
+    "H1"
     // "5.2.08-512.png",
     // "4.2.03-512.png",
   };
@@ -82,8 +91,13 @@ int main(int argc, char const *argv[]) {
       finp.close();
 
     }
-    cout << c_buffer << endl;
-    cout << admm05 << endl << admm1 << endl << iadmm << endl;
+    // cout << c_buffer << endl;
+    // cout << admm05 << endl << admm1 << endl << iadmm << endl;
+    if(k%2)
+      cout << "\\rowcolor[gray]{0.9}" << endl;
+    cout << code[k] << " & " << iadmm << " & " << admm05 << " & "
+        << fixed << ((float) admm05.k)/iadmm.k << " & "<< admm1 << " & "
+        << fixed << ((float) admm1.k)/iadmm.k << " \\\\" << endl;
   }
 
   return 0;
