@@ -77,15 +77,15 @@ int main(int argc, char const *argv[]) {
     std::vector<double> OBJ, E, TV, S, residual;
     std::ofstream fout;
 
-    rop = admm1(OBJ, TV, E, S, residual, I, H, Bn, mu, alpha, nIter);
-    sprintf(fname, "testData/admm(1)-%s.txt", imageName[k].c_str());
-    std::cout << "fname = " << fname << std::endl;
-    fout.open(fname);
-    fout << "# OBJ  TV  ERROR  SNR  RESIDUAL" << std::endl;
-    for(int i=0; i<nIter; ++i)
-      fout << i << " " << OBJ[i] << " " << TV[i]
-            << " " << E[i] << " " << S[i] << " " << residual[i] << std::endl;
-    fout.close();
+    // rop = admm1(OBJ, TV, E, S, residual, I, H, Bn, mu, alpha, nIter);
+    // sprintf(fname, "testData/admm(1)-%s.txt", imageName[k].c_str());
+    // std::cout << "fname = " << fname << std::endl;
+    // fout.open(fname);
+    // fout << "# OBJ  TV  ERROR  SNR  RESIDUAL" << std::endl;
+    // for(int i=0; i<nIter; ++i)
+    //   fout << i << " " << OBJ[i] << " " << TV[i]
+    //         << " " << E[i] << " " << S[i] << " " << residual[i] << std::endl;
+    // fout.close();
 
 
     rop = admm05(OBJ, TV, E, S, residual, I, H, Bn, mu, alpha, nIter);
@@ -98,15 +98,15 @@ int main(int argc, char const *argv[]) {
     fout.close();
 
 
-    rop = iadmm(OBJ, TV, E, S, residual, I, H, Bn, mu, alpha, nIter);
-
-    sprintf(fname, "testData/iadmm-%s.txt", imageName[k].c_str());
-    fout.open(fname);
-    fout << "# OBJ  TV  ERROR  SNR  RESIDUAL" << std::endl;
-    for(int i=0; i<nIter; ++i)
-      fout << i << " " << OBJ[i] << " " << TV[i]
-            << " " << E[i] << " " << S[i] << " " << residual[i] << std::endl;
-    fout.close();
+    // rop = iadmm(OBJ, TV, E, S, residual, I, H, Bn, mu, alpha, nIter);
+    //
+    // sprintf(fname, "testData/iadmm-%s.txt", imageName[k].c_str());
+    // fout.open(fname);
+    // fout << "# OBJ  TV  ERROR  SNR  RESIDUAL" << std::endl;
+    // for(int i=0; i<nIter; ++i)
+    //   fout << i << " " << OBJ[i] << " " << TV[i]
+    //         << " " << E[i] << " " << S[i] << " " << residual[i] << std::endl;
+    // fout.close();
 
   }
 

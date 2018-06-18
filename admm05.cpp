@@ -82,18 +82,20 @@ Mat admm05(std::vector<double> &OBJ, std::vector<double> &TV,
     fftn(auxX); fftn(auxY);
     Nono = (conjoDx^auxX) + (conjoDy^auxY);
 
-
     double residualDenom = 1+sqrt(norm(U,2)*norm(U,2) +
               norm(Px,2)*norm(Px,2) + norm(Py,2)*norm(Py,2));
+
+    // USE auxX to store Previous U
+    auxX = U;
     residual[k] = 0.0;
 
-    residual[k] += norm(U-auxX,2)*norm(U-auxX,2);
 
     U = (Nomin1 + gamma*Nomin2 + Nono/mu) / Denom;
     ifftn(U);
     U = real(U);
 
 
+    residual[k] += norm(U-auxX,2)*norm(U-auxX,2);
 
     // UPDATE P
     Ux = diffY(U);
@@ -105,7 +107,6 @@ Mat admm05(std::vector<double> &OBJ, std::vector<double> &TV,
 
     residual[k] += delta*delta*norm(Wx-Ux,2)*norm(Wx-Ux,2);
     residual[k] += delta*delta*norm(Wy-Uy,2)*norm(Wy-Uy,2);
-
 
     residual[k] = sqrt(residual[k])/residualDenom;
 
