@@ -36,7 +36,7 @@ int main(int argc, char const *argv[]) {
 
   int nPic = 6;
   int nAlgorithm = 3;
-  float eps = 1e-3f;
+  float eps = 5e-4f;
 
   string algorithm[nAlgorithm] = {"iadmm", "iadmm", "admm(1)"};
   string picName[nPic] = {
@@ -100,7 +100,7 @@ int main(int argc, char const *argv[]) {
     // cout << admm05 << endl << admm1 << endl << iadmm << endl;
     if(k%2)
       cout << "\\rowcolor[gray]{0.9}" << endl;
-    cout << code[k] << " & " << iadmm05 << " & " << iadmm05 << " & "
+    cout << code[k] << " & " << iadmm05 << " & " << iadmm02 << " & "
         << fixed << ((float) iadmm02.k)/iadmm05.k << " & "<< admm1 << " & "
         << fixed << ((float) admm1.k)/iadmm05.k << " \\\\" << endl;
   }
