@@ -19,13 +19,10 @@ Mat admm05(std::vector<double> &OBJ, std::vector<double> &TV,
   double delta = 0.001;
   CMat U(blurred);
   CMat U0(U.rows, U.cols);
-  CMat UB(U.rows, U.cols);
   CMat Px(U.rows, U.cols);
   CMat Py(U.rows, U.cols);
   CMat Px0(U.rows, U.cols);
   CMat Py0(U.rows, U.cols);
-  CMat PxB(U.rows, U.cols);
-  CMat PyB(U.rows, U.cols);
   CMat Ux;
   CMat Uy;
   CMat Denom;
@@ -86,12 +83,11 @@ Mat admm05(std::vector<double> &OBJ, std::vector<double> &TV,
     Nono = (conjoDx^auxX) + (conjoDy^auxY);
 
 
+    double residualDenom = 1+sqrt(norm(U,2)*norm(U,2) +
+              norm(Px,2)*norm(Px,2) + norm(Py,2)*norm(Py,2));
     residual[k] = 0.0;
-    double residualDenom = 1+sqrt(norm(UB,2)*norm(UB,2) +
-    norm(PxB,2)*norm(PxB,2) + norm(PyB,2)*norm(PyB,2));
 
-
-    residual[k] += norm(U-UB,2)*norm(U-UB,2);
+    residual[k] += norm(U-auxX,2)*norm(U-auxX,2);
 
     U = (Nomin1 + gamma*Nomin2 + Nono/mu) / Denom;
     ifftn(U);
@@ -107,14 +103,9 @@ Mat admm05(std::vector<double> &OBJ, std::vector<double> &TV,
     Px = Px + delta*(Wx-Ux);
     Py = Py + delta*(Wy-Uy);
 
-
-    PxB = Px + alpha * (Px - Px0);
-    PyB = Py + alpha * (Py - Py0);
-    UB  = U  + alpha * (U  - U0);
-
-
     residual[k] += delta*delta*norm(Wx-Ux,2)*norm(Wx-Ux,2);
     residual[k] += delta*delta*norm(Wy-Uy,2)*norm(Wy-Uy,2);
+
 
     residual[k] = sqrt(residual[k])/residualDenom;
 
