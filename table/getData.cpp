@@ -36,9 +36,9 @@ int main(int argc, char const *argv[]) {
 
   int nPic = 6;
   int nAlgorithm = 3;
-  float eps = 5e-4f;
+  float eps = 1e-3f;
 
-  string algorithm[nAlgorithm] = {"admm(05)", "admm(1)", "iadmm"};
+  string algorithm[nAlgorithm] = {"iadmm", "iadmm", "admm(1)"};
   string picName[nPic] = {
     "cameraman256.png",
     "lena256.png",
@@ -64,12 +64,17 @@ int main(int argc, char const *argv[]) {
   char c_buffer[100];
   Line line, next_line;
   Line best[nAlgorithm];
-  Line &admm05 = best[0];
-  Line &admm1  = best[1];
-  Line &iadmm  = best[2];
-  string picFolder("../testData/alpha05/");
+  Line &iadmm05 = best[0];
+  Line &iadmm02 = best[1];
+  Line &admm1   = best[2];
+  string picFolder;
   for(int k=0; k<nPic; ++k) {
     for(int j=0; j<nAlgorithm; ++j) {
+      if (j==1)
+        picFolder = "../testData/alpha02/";
+      else
+        picFolder = "../testData/alpha05/";
+
       string filename = picFolder + algorithm[j] + "-"
             + picName[k] + ".txt";
       finp.open(filename.c_str());
@@ -95,9 +100,9 @@ int main(int argc, char const *argv[]) {
     // cout << admm05 << endl << admm1 << endl << iadmm << endl;
     if(k%2)
       cout << "\\rowcolor[gray]{0.9}" << endl;
-    cout << code[k] << " & " << iadmm << " & " << admm1 << " & "
-        << fixed << ((float) admm1.k)/iadmm.k << " & "<< admm05 << " & "
-        << fixed << ((float) admm05.k)/iadmm.k << " \\\\" << endl;
+    cout << code[k] << " & " << iadmm05 << " & " << iadmm05 << " & "
+        << fixed << ((float) iadmm02.k)/iadmm05.k << " & "<< admm1 << " & "
+        << fixed << ((float) admm1.k)/iadmm05.k << " \\\\" << endl;
   }
 
   return 0;
