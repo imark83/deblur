@@ -30,20 +30,20 @@ int main(int argc, char const *argv[]) {
     int kernelSize = 17;
     double kernelSigma = 7;
     double sigma = 1.0e-5;
-    double alpha=0.5;
+    double alpha=0.2;
     int nIter = 500;
     double mu = 1e9; //0.05 / cv::max(sigma,1.e-12);
 
     char fname[100];
     string imageName[] = {
-      "cameraman256.png",
-      "4.2.03-512.png",
-      "5.3.01-1024.png",
-      "brain-512.png",
-      "heart-512.png",
-      "lena256.png",
-      "5.2.08-512.png",
-      "5.3.02-1024.png"};
+      "quijote.png",
+      "5.1.09.tiff",
+      "5.1.13.tiff",
+      "ruler.512.tiff",
+      "texmos1.p512.tiff",
+      "1.5.05.tiff",
+      "5.3.02.tiff",
+      "3.2.25.tiff"};
 
     cv::Mat cv_original = cv::imread("testImages/"+imageName[k], cv::IMREAD_GRAYSCALE);
     // LOADS ORIGINAL IMAGE TO A MAT
@@ -77,25 +77,25 @@ int main(int argc, char const *argv[]) {
     std::vector<double> OBJ, E, TV, S, residual;
     std::ofstream fout;
 
-    rop = admm1(OBJ, TV, E, S, residual, I, H, Bn, mu, alpha, nIter);
-    sprintf(fname, "testData/admm(1)-%s.txt", imageName[k].c_str());
-    std::cout << "fname = " << fname << std::endl;
-    fout.open(fname);
-    fout << "# OBJ  TV  ERROR  SNR  RESIDUAL" << std::endl;
-    for(int i=0; i<nIter; ++i)
-      fout << i << " " << OBJ[i] << " " << TV[i]
-            << " " << E[i] << " " << S[i] << " " << residual[i] << std::endl;
-    fout.close();
-
-
-    rop = admm05(OBJ, TV, E, S, residual, I, H, Bn, mu, alpha, nIter);
-    sprintf(fname, "testData/admm(05)-%s.txt", imageName[k].c_str());
-    fout.open(fname);
-    fout << "# OBJ  TV  ERROR  SNR  RESIDUAL" << std::endl;
-    for(int i=0; i<nIter; ++i)
-      fout << i << " " << OBJ[i] << " " << TV[i]
-            << " " << E[i] << " " << S[i] << " " << residual[i] << std::endl;
-    fout.close();
+    // rop = admm1(OBJ, TV, E, S, residual, I, H, Bn, mu, alpha, nIter);
+    // sprintf(fname, "testData/admm(1)-%s.txt", imageName[k].c_str());
+    // std::cout << "fname = " << fname << std::endl;
+    // fout.open(fname);
+    // fout << "# OBJ  TV  ERROR  SNR  RESIDUAL" << std::endl;
+    // for(int i=0; i<nIter; ++i)
+    //   fout << i << " " << OBJ[i] << " " << TV[i]
+    //         << " " << E[i] << " " << S[i] << " " << residual[i] << std::endl;
+    // fout.close();
+    //
+    //
+    // rop = admm05(OBJ, TV, E, S, residual, I, H, Bn, mu, alpha, nIter);
+    // sprintf(fname, "testData/admm(05)-%s.txt", imageName[k].c_str());
+    // fout.open(fname);
+    // fout << "# OBJ  TV  ERROR  SNR  RESIDUAL" << std::endl;
+    // for(int i=0; i<nIter; ++i)
+    //   fout << i << " " << OBJ[i] << " " << TV[i]
+    //         << " " << E[i] << " " << S[i] << " " << residual[i] << std::endl;
+    // fout.close();
 
 
     rop = iadmm(OBJ, TV, E, S, residual, I, H, Bn, mu, alpha, nIter);

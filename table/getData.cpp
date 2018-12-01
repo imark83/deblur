@@ -34,30 +34,29 @@ istream& operator>>(istream &input, Line &op) {
 
 int main(int argc, char const *argv[]) {
 
-  int nPic = 6;
+  int nPic = 8;
   int nAlgorithm = 3;
-  float eps = 5e-4f;
+  float eps = 5e-3f;
 
   string algorithm[nAlgorithm] = {"iadmm", "iadmm", "admm(1)"};
   string picName[nPic] = {
-    "cameraman256.png",
-    "lena256.png",
-    "brain-512.png",
-    "heart-512.png",
-    "5.3.01-1024.png",
-    "5.3.02-1024.png"
-    // "5.2.08-512.png",
-    // "4.2.03-512.png",
-  };
+    "quijote.png",
+    "5.1.09.tiff",
+    "5.1.13.tiff",
+    "ruler.512.tiff",
+    "texmos1.p512.tiff",
+    "1.5.05.tiff",
+    "5.3.02.tiff",
+    "3.2.25.tiff"};
   string code[nPic] = {
-    "L0",
-    "L1",
-    "M0",
-    "M1",
-    "H0",
-    "H1"
-    // "5.2.08-512.png",
-    // "4.2.03-512.png",
+    "L2",
+    "L3",
+    "L4",
+    "M2",
+    "M3",
+    "M4",
+    "H2",
+    "H3"
   };
 
   ifstream finp;
@@ -77,6 +76,8 @@ int main(int argc, char const *argv[]) {
 
       string filename = picFolder + algorithm[j] + "-"
             + picName[k] + ".txt";
+      // cout << "try to open " << filename << endl;
+      // return 0;
       finp.open(filename.c_str());
       // finp.open("../testData/alpha05/admm(05)-cameraman256.png.txt");
       // finp.open("../testData/alpha05/admm(1)-cameraman256.png.txt");
